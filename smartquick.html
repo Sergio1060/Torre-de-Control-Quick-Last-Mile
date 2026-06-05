@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartQuick Operations — Quick Help Courier</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --quick-black: #0D0D0D;
+    --quick-yellow: #F5C400;
+    --quick-navy: #0A2463;
+    --quick-blue: #1B4FD8;
+    --quick-orange: #F47B20;
+    --surface: #F7F6F2;
+    --card: #FFFFFF;
+    --text-1: #0D0D0D;
+    --text-2: #5C5B57;
+    --text-3: #9E9D99;
+    --border: rgba(13,13,13,0.1);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--surface); font-family: 'DM Sans', sans-serif; color: var(--text-1); min-height: 100vh; }
+
+  header {
+    background: var(--quick-black);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: var(--quick-yellow);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--quick-black);
+  }
+  .logo-text { color: #fff; font-size: 15px; font-weight: 500; letter-spacing: -0.2px; }
+  .logo-text span { color: var(--quick-yellow); }
+  .header-meta { display: flex; align-items: center; gap: 16px; }
+  .status-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{ opacity:1 } 50%{ opacity:0.4 } }
+  .status-label { color: #9E9D99; font-size: 12px; }
+  .last-update { color: #9E9D99; font-size: 11px; font-family: 'Space Mono', monospace; }
+
+  .page { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 1rem;
+    padding-left: 2px;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 2.5rem;
+  }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent, var(--quick-blue));
+  }
+  .kpi-label { font-size: 11px; color: var(--text-3); font-weight: 500; letter-spacing: 0.3px; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 600; color: var(--text-1); line-height: 1; font-family: 'Space Mono', monospace; }
+  .kpi-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 2.5rem;
+  }
+  @media (max-width: 780px) { .charts-grid { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .chart-title { font-size: 13px; font-weight: 600; color: var(--text-1); }
+  .chart-badge { font-size: 10px; background: #F0F9F4; color: #166534; border-radius: 20px; padding: 3px 8px; font-weight: 500; }
+  .chart-badge.warning { background: #FEF9EC; color: #854F0B; }
+
+  .full-width { grid-column: 1 / -1; }
+
+  .table-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+  .table-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .table-header h3 { font-size: 13px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th {
+    background: #FAFAF9;
+    padding: 9px 14px;
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #FAFAF9; }
+  tbody td { padding: 10px 14px; color: var(--text-1); }
+  .td-mono { font-family: 'Space Mono', monospace; font-size: 11.5px; }
+  .badge-pct {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+  }
+  .badge-green { background: #F0F9F4; color: #166534; }
+  .badge-yellow { background: #FEF9EC; color: #854F0B; }
+  .badge-red { background: #FEF2F2; color: #991B1B; }
+
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    gap: 12px;
+    color: var(--text-3);
+  }
+  .spinner {
+    width: 28px; height: 28px;
+    border: 2px solid var(--border);
+    border-top-color: var(--quick-yellow);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-state {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    color: #991B1B;
+    font-size: 13px;
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  .tab-nav {
+    display: flex;
+    gap: 4px;
+    background: #EEECEA;
+    border-radius: 8px;
+    padding: 3px;
+    width: fit-content;
+    margin-bottom: 1.5rem;
+  }
+  .tab-btn {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab-btn.active { background: var(--card); color: var(--text-1); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+
+  .refresh-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--quick-yellow);
+    color: var(--quick-black);
+    border: none;
+    border-radius: 7px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.15s;
+  }
+  .refresh-btn:hover { opacity: 0.85; }
+  .refresh-btn svg { width: 13px; height: 13px; }
+
+  .bar-inline {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .bar-track {
+    flex: 1; height: 4px; background: #EEECEA; border-radius: 2px; overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 2px; background: var(--quick-blue);
+    transition: width 0.6s ease;
+  }
+  .bar-fill.high { background: #22c55e; }
+  .bar-fill.mid { background: var(--quick-orange); }
+  .bar-fill.low { background: #ef4444; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">Q</div>
+    <div class="logo-text">Smart<span>Quick</span> — Ops Dashboard</div>
+  </div>
+  <div class="header-meta">
+    <div class="status-dot"></div>
+    <span class="status-label">En vivo</span>
+    <span class="last-update" id="lastUpdate">—</span>
+    <button class="refresh-btn" onclick="loadAll()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+      Actualizar
+    </button>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="error-state" id="errorBox">
+    ⚠ No se pudo conectar con la API del VPS. Verifica que los workflows de N8N estén publicados y activos.
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('kpis')">KPIs Diarios</button>
+    <button class="tab-btn" onclick="switchTab('clientes')">Clientes</button>
+    <button class="tab-btn" onclick="switchTab('ciudades')">Ciudades</button>
+    <button class="tab-btn" onclick="switchTab('conductores')">Conductores</button>
+  </div>
+
+  <!-- TAB: KPIs -->
+  <div class="tab-section active" id="tab-kpis">
+    <p class="section-title">Resumen operativo — últimos 30 días</p>
+    <div class="kpi-grid" id="kpiCards">
+      <div class="loading-state"><div class="spinner"></div><span>Cargando KPIs...</span></div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Servicios diarios</span>
+          <span class="chart-badge" id="badge-completados">—</span>
+        </div>
+        <div style="position:relative;height:220px;">
+          <canvas id="chartServicios" role="img" aria-label="Servicios diarios completados vs novedades">Cargando...</canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Recaudo diario (COP)</span>
+          <span class="chart-badge warning" id="badge-recaudo">—</span>
+        </div>
+        <div style="position:relative;height:220px;">
+          <canvas id="chartRecaudo" role="img" aria-label="Recaudo diario en pesos colombianos">Cargando...</canvas>
+        </div>
+      </div>
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <span class="chart-title">Tasa de cumplimiento diaria (%)</span>
+        </div>
+        <div style="position:relative;height:160px;">
+          <canvas id="chartCumplimiento" role="img" aria-label="Tasa de cumplimiento diaria">Cargando...</canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: CLIENTES -->
+  <div class="tab-section" id="tab-clientes">
+    <p class="section-title">Ranking por recaudo acumulado</p>
+    <div class="table-card" id="tablaClientes">
+      <div class="loading-state"><div class="spinner"></div><span>Cargando clientes...</span></div>
+    </div>
+  </div>
+
+  <!-- TAB: CIUDADES -->
+  <div class="tab-section" id="tab-ciudades">
+    <p class="section-title">Cumplimiento operativo por ciudad</p>
+    <div class="charts-grid" style="margin-bottom:16px;">
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <span class="chart-title">Efectividad por ciudad (%)</span>
+        </div>
+        <div id="chartCiudadWrapper" style="position:relative;">
+          <canvas id="chartCiudad" role="img" aria-label="Efectividad por ciudad">Cargando...</canvas>
+        </div>
+      </div>
+    </div>
+    <div class="table-card" id="tablaCiudades">
+      <div class="loading-state"><div class="spinner"></div><span>Cargando ciudades...</span></div>
+    </div>
+  </div>
+
+  <!-- TAB: CONDUCTORES -->
+  <div class="tab-section" id="tab-conductores">
+    <p class="section-title">Top 30 conductores por volumen</p>
+    <div class="table-card" id="tablaConductores">
+      <div class="loading-state"><div class="spinner"></div><span>Cargando conductores...</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = 'https://n8n.srv1729021.hstgr.cloud/webhook';
+let charts = {};
+
+function fmt(n) { return Number(n).toLocaleString('es-CO'); }
+function fmtCOP(n) { return '$' + Math.round(n/1000).toLocaleString('es-CO') + 'K'; }
+function fmtPct(n) { return parseFloat(n).toFixed(1) + '%'; }
+function badgePct(v) {
+  const p = parseFloat(v);
+  const cls = p >= 95 ? 'badge-green' : p >= 85 ? 'badge-yellow' : 'badge-red';
+  return `<span class="badge-pct ${cls}">${fmtPct(v)}</span>`;
+}
+function bar(v, max) {
+  const pct = Math.min(100, (parseFloat(v) / max) * 100);
+  const cls = pct >= 80 ? 'high' : pct >= 50 ? 'mid' : 'low';
+  return `<div class="bar-inline"><div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct.toFixed(1)}%"></div></div></div>`;
+}
+function destroyChart(id) { if(charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+async function fetchAPI(path) {
+  const r = await fetch(`${API}/${path}`, { headers: { 'Accept': 'application/json' } });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const j = await r.json();
+  return j.data || [];
+}
+
+function showError(msg) {
+  const box = document.getElementById('errorBox');
+  box.style.display = 'block';
+  box.textContent = '⚠ ' + msg;
+}
+
+async function loadKPIs() {
+  try {
+    const data = await fetchAPI('api/kpis-diarios');
+    if (!data.length) return;
+    const last = data[0];
+    const totalSvcs = data.reduce((a,d) => a + parseInt(d.total_servicios||0), 0);
+    const totalRec = data.reduce((a,d) => a + parseFloat(d.recaudo_total||0), 0);
+    const avgCumpl = data.reduce((a,d) => a + parseFloat(d.tasa_cumplimiento||0), 0) / data.length;
+    const totalNov = data.reduce((a,d) => a + parseInt(d.servicios_novedad||0), 0);
+
+    document.getElementById('kpiCards').innerHTML = `
+      <div class="kpi-card" style="--accent:#F5C400"><div class="kpi-label">Servicios (30d)</div><div class="kpi-value">${fmt(totalSvcs)}</div><div class="kpi-sub">acumulado</div></div>
+      <div class="kpi-card" style="--accent:#22c55e"><div class="kpi-label">Recaudo (30d)</div><div class="kpi-value">${fmtCOP(totalRec)}</div><div class="kpi-sub">pesos colombianos</div></div>
+      <div class="kpi-card" style="--accent:#1B4FD8"><div class="kpi-label">Cumplimiento prom.</div><div class="kpi-value">${avgCumpl.toFixed(1)}%</div><div class="kpi-sub">últimos 30 días</div></div>
+      <div class="kpi-card" style="--accent:#F47B20"><div class="kpi-label">Novedades</div><div class="kpi-value">${fmt(totalNov)}</div><div class="kpi-sub">total período</div></div>
+      <div class="kpi-card" style="--accent:#0A2463"><div class="kpi-label">Flete promedio</div><div class="kpi-value">${fmtCOP(parseFloat(last.promedio_flete||0))}</div><div class="kpi-sub">último día activo</div></div>
+    `;
+
+    const reversed = [...data].reverse();
+    const labels = reversed.map(d => {
+      const dt = new Date(d.fecha);
+      return `${dt.getDate()}/${dt.getMonth()+1}`;
+    });
+    document.getElementById('badge-completados').textContent = `${fmt(totalSvcs)} total`;
+    document.getElementById('badge-recaudo').textContent = fmtCOP(totalRec);
+
+    destroyChart('chartServicios');
+    charts['chartServicios'] = new Chart(document.getElementById('chartServicios'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Completados', data: reversed.map(d => d.servicios_completados), backgroundColor: '#1B4FD8', borderRadius: 3 },
+          { label: 'Novedades', data: reversed.map(d => d.servicios_novedad), backgroundColor: '#F47B20', borderRadius: 3 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { x: { stacked: true, ticks: { font: { size: 10 } } }, y: { stacked: true, ticks: { font: { size: 10 } } } }
+      }
+    });
+
+    destroyChart('chartRecaudo');
+    charts['chartRecaudo'] = new Chart(document.getElementById('chartRecaudo'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{ label: 'Recaudo COP', data: reversed.map(d => parseFloat(d.recaudo_total||0)), borderColor: '#F5C400', backgroundColor: 'rgba(245,196,0,0.1)', borderWidth: 2, pointRadius: 3, fill: true, tension: 0.3 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { font: { size: 10 } } },
+          y: { ticks: { font: { size: 10 }, callback: v => fmtCOP(v) } }
+        }
+      }
+    });
+
+    destroyChart('chartCumplimiento');
+    charts['chartCumplimiento'] = new Chart(document.getElementById('chartCumplimiento'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{ label: '%', data: reversed.map(d => parseFloat(d.tasa_cumplimiento||0)), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.08)', borderWidth: 2, pointRadius: 2, fill: true, tension: 0.3 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { font: { size: 10 } } },
+          y: { min: 0, max: 100, ticks: { font: { size: 10 }, callback: v => v + '%' } }
+        }
+      }
+    });
+
+  } catch(e) { showError('KPIs: ' + e.message); }
+}
+
+async function loadClientes() {
+  try {
+    const data = await fetchAPI('api/ranking-clientes');
+    if (!data.length) { document.getElementById('tablaClientes').innerHTML = '<div class="loading-state"><span>Sin datos disponibles</span></div>'; return; }
+    const maxRec = Math.max(...data.map(d => parseFloat(d.recaudo_total||0)));
+    document.getElementById('tablaClientes').innerHTML = `
+      <div class="table-header"><h3>Ranking de clientes</h3><span style="font-size:11px;color:var(--text-3)">${data.length} clientes activos</span></div>
+      <table>
+        <thead><tr><th>#</th><th>Cliente</th><th>Servicios</th><th>Cumplimiento</th><th>Recaudo</th><th>Ciudades</th></tr></thead>
+        <tbody>
+          ${data.map((d,i) => `
+            <tr>
+              <td class="td-mono" style="color:var(--text-3)">${i+1}</td>
+              <td style="font-weight:500">${d.cliente||'—'}</td>
+              <td class="td-mono">${fmt(d.total_servicios)}</td>
+              <td>${badgePct(d.tasa_cumplimiento||0)}</td>
+              <td class="td-mono">${fmtCOP(parseFloat(d.recaudo_total||0))}<br>${bar(d.recaudo_total, maxRec)}</td>
+              <td class="td-mono" style="color:var(--text-2)">${d.ciudades_activas||'—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch(e) { showError('Clientes: ' + e.message); }
+}
+
+async function loadCiudades() {
+  try {
+    const data = await fetchAPI('api/cumplimiento-ciudad');
+    if (!data.length) return;
+    const labels = data.map(d => d.ciudad||'—');
+    const cumpl = data.map(d => parseFloat(d.tasa_cumplimiento||0));
+    const wrapper = document.getElementById('chartCiudadWrapper');
+    wrapper.style.height = Math.max(300, data.length * 36 + 80) + 'px';
+
+    destroyChart('chartCiudad');
+    charts['chartCiudad'] = new Chart(document.getElementById('chartCiudad'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{ label: 'Cumplimiento %', data: cumpl,
+          backgroundColor: cumpl.map(v => v >= 95 ? '#22c55e' : v >= 85 ? '#F47B20' : '#ef4444'),
+          borderRadius: 4 }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { min: 0, max: 100, ticks: { font: { size: 10 }, callback: v => v + '%' } },
+          y: { ticks: { font: { size: 11 } } }
+        }
+      }
+    });
+
+    const maxSvcs = Math.max(...data.map(d => parseInt(d.total_servicios||0)));
+    document.getElementById('tablaCiudades').innerHTML = `
+      <div class="table-header"><h3>Detalle por ciudad</h3><span style="font-size:11px;color:var(--text-3)">${data.length} ciudades</span></div>
+      <table>
+        <thead><tr><th>Ciudad</th><th>Servicios</th><th>Completados</th><th>Novedades</th><th>Cumplimiento</th><th>Recaudo</th></tr></thead>
+        <tbody>
+          ${data.map(d => `
+            <tr>
+              <td style="font-weight:500">${d.ciudad||'—'}</td>
+              <td class="td-mono">${fmt(d.total_servicios)}<br>${bar(d.total_servicios, maxSvcs)}</td>
+              <td class="td-mono">${fmt(d.servicios_completados)}</td>
+              <td class="td-mono" style="color:#ef4444">${fmt(d.servicios_novedad)}</td>
+              <td>${badgePct(d.tasa_cumplimiento||0)}</td>
+              <td class="td-mono">${fmtCOP(parseFloat(d.recaudo_ciudad||0))}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch(e) { showError('Ciudades: ' + e.message); }
+}
+
+async function loadConductores() {
+  try {
+    const data = await fetchAPI('api/productividad-conductor');
+    if (!data.length) { document.getElementById('tablaConductores').innerHTML = '<div class="loading-state"><span>Sin datos disponibles</span></div>'; return; }
+    const maxSvcs = Math.max(...data.map(d => parseInt(d.total_servicios||0)));
+    document.getElementById('tablaConductores').innerHTML = `
+      <div class="table-header"><h3>Productividad por conductor</h3><span style="font-size:11px;color:var(--text-3)">Top ${data.length} conductores</span></div>
+      <table>
+        <thead><tr><th>#</th><th>Conductor</th><th>Ciudad</th><th>Servicios</th><th>Cumplimiento</th><th>Recaudo</th></tr></thead>
+        <tbody>
+          ${data.map((d,i) => `
+            <tr>
+              <td class="td-mono" style="color:var(--text-3)">${i+1}</td>
+              <td style="font-weight:500">${d.conductor_nombre||d.conductor_id||'—'}</td>
+              <td style="font-size:12px;color:var(--text-2)">${d.ciudad||'—'}</td>
+              <td class="td-mono">${fmt(d.total_servicios)}<br>${bar(d.total_servicios, maxSvcs)}</td>
+              <td>${badgePct(d.tasa_cumplimiento||0)}</td>
+              <td class="td-mono">${fmtCOP(parseFloat(d.recaudo_conductor||0))}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch(e) { showError('Conductores: ' + e.message); }
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    const tabs = ['kpis','clientes','ciudades','conductores'];
+    b.classList.toggle('active', tabs[i] === name);
+  });
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+async function loadAll() {
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('lastUpdate').textContent = 'Actualizando...';
+  await Promise.allSettled([loadKPIs(), loadClientes(), loadCiudades(), loadConductores()]);
+  const now = new Date();
+  document.getElementById('lastUpdate').textContent =
+    `Actualizado: ${now.toLocaleTimeString('es-CO', {hour:'2-digit',minute:'2-digit'})}`;
+}
+
+loadAll();
+setInterval(loadAll, 5 * 60 * 1000);
+</script>
+</body>
+</html>
