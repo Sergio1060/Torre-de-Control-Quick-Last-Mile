@@ -520,6 +520,7 @@ const API = 'https://n8n.srv1729021.hstgr.cloud/webhook';
 let charts = {};
 let rawKpis = [], rawCiudades = [], rawClientes = [];
 let rawPendientesResumen = [], rawPendientesDetalle = [];
+let rawCiudadesHoy = [];
 
 function renderPendientes(){
   const resumen = rawPendientesResumen;
@@ -780,10 +781,10 @@ async function renderPV(){
   const ciudades = getSelectedCiudades('ms-pv');
   const kpis  = rawKpis.filter(d=>d.fecha);
   const today = kpis.length>0?kpis[kpis.length-1]:null;
-  let ciuHoy  = rawCiudades;
+  let ciuHoy  = rawCiudadesHoy; // solo datos de hoy
   if(ciudades) ciuHoy = ciuHoy.filter(d=>ciudades.includes(d.city));
 
-  // aggregate by ciudad (sum across dates for today's date from API)
+  // aggregate por ciudad desde datos de hoy
   const byCiu = {};
   ciuHoy.forEach(d=>{
     const c=d.city||'—';
@@ -1169,19 +1170,23 @@ function buildSemanas(data){
 // ─── LOAD ALL ────────────────────────────────────────────
 async function loadAll(manual){
   try {
-    const [kpis,ciudades,clientes,pendResumen,pendDetalle]=await Promise.all([
+    const [kpis,ciudades,clientes,pendResumen,pendDetalle,ciudadesHoy]=await Promise.all([
       fetchAPI('api/kpis-diarios'),
       fetchAPI('api/cumplimiento-ciudad'),
       fetchAPI('api/ranking-clientes'),
       fetchAPI('api/pendientes-resumen'),
-      fetchAPI('api/pendientes-detalle')
+      fetchAPI('api/pendientes-detalle'),
+      fetchAPI('api/cumplimiento-hoy')
     ]);
     rawKpis=kpis; rawCiudades=ciudades; rawClientes=clientes;
     rawPendientesResumen=pendResumen; rawPendientesDetalle=pendDetalle;
+    rawCiudadesHoy=ciudadesHoy;
 
     // Ciudades únicas para multi-selects
     allCiudades=[...new Set(ciudades.map(d=>d.city).filter(Boolean))].sort();
-    ['ms-pv','ms-hist','ms-ciu','ms-cum'].forEach(id=>{
+    const ciudadesHoyList=[...new Set(ciudadesHoy.map(d=>d.city).filter(Boolean))].sort();
+    initMS('ms-pv', ciudadesHoyList, ()=>renderPV());
+    ['ms-hist','ms-ciu','ms-cum'].forEach(id=>{
       initMS(id, allCiudades, ()=>{
         if(id==='ms-pv') renderPV();
         else if(id==='ms-hist') renderHistorico();
