@@ -2,7 +2,7 @@
   "name": "SmartQuick — Torre de Control",
   "short_name": "SmartQuick",
   "description": "Dashboard operativo Quick Help Courier",
-  "start_url": "/Plan-de-Vuelo-Quick-Last-Mile/smartquick.html",
+  "start_url": "/Torre-de-Control-Quick-Last-Mile/smartquick.html",
   "display": "standalone",
   "background_color": "#0D0D0D",
   "theme_color": "#0D0D0D",
