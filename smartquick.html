@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartQuick — Centro de Control Operativo</title>
+
+<meta name=theme-color content="#0D0D0D">
+<meta name=mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="black-translucent">
+<meta name=apple-mobile-web-app-title content="SmartQuick">
+<link rel="apple-touch-icon" href="https://sergio1060.github.io/Plan-de-Vuelo-Quick-Last-Mile/icon-192.png">
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -181,6 +189,75 @@ tbody td{padding:9px 14px}
 .shdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.5rem}
 .shdr h2{font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:.5px;text-transform:uppercase}
 .shdr span{font-size:11px;color:var(--text-3)}
+
+/* ===================== MOBILE RESPONSIVE ===================== */
+/* Bottom nav para móvil */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--qk-black);border-top:1px solid rgba(255,255,255,0.08);z-index:100;padding:0 0 env(safe-area-inset-bottom,0) 0}
+.mob-nav-inner{display:flex;justify-content:space-around;align-items:stretch}
+.mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px 6px;cursor:pointer;color:rgba(255,255,255,0.35);font-size:9px;font-weight:500;letter-spacing:.3px;transition:color .15s;position:relative;min-height:52px;border:none;background:none;font-family:"IBM Plex Sans",sans-serif;gap:3px}
+.mob-nav-item svg{width:20px;height:20px;flex-shrink:0}
+.mob-nav-item.active{color:var(--qk-yellow)}
+.mob-nav-item .mob-badge{position:absolute;top:6px;right:calc(50% - 14px);background:var(--red);color:#fff;font-size:8px;font-weight:700;border-radius:10px;padding:1px 4px;min-width:14px;text-align:center}
+
+@media (max-width: 768px) {
+  /* Ocultar sidebar desktop, mostrar nav móvil */
+  .sidebar{display:none!important}
+  .mob-nav{display:block}
+  
+  /* Header simplificado */
+  .header{padding:0 .875rem;height:48px}
+  .h-sub{display:none}
+  .h-div{display:none}
+  .h-title{font-size:13px}
+  .h-time{display:none}
+  .btn-refresh{padding:5px 10px;font-size:11px}
+  .live-pill{padding:3px 8px}
+  .live-text{font-size:10px}
+  
+  /* Shell y main */
+  .shell{height:calc(100vh - 48px)}
+  .main{padding:.75rem;padding-bottom:calc(60px + env(safe-area-inset-bottom,0) + .75rem)}
+  
+  /* KPI strip: 2 cols en móvil */
+  .kpi-strip{grid-template-columns:repeat(2,1fr)!important;gap:8px}
+  .kpi-val{font-size:18px}
+  .kpi-card{padding:.75rem .875rem}
+  
+  /* Charts: 1 col */
+  .charts-row.col2{grid-template-columns:1fr!important}
+  .cumpl-split{grid-template-columns:1fr!important}
+  
+  /* Filter bar */
+  .fbar{gap:7px;padding:8px 10px}
+  .fbar-info{display:none}
+  
+  /* Tablas: scroll horizontal */
+  .tbl-card{overflow:hidden}
+  .tbl-card > div{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:520px}
+  thead th{font-size:9px;padding:7px 10px}
+  tbody td{padding:8px 10px;font-size:11.5px}
+  
+  /* Multi-select dropdown */
+  .ms-dropdown{min-width:180px}
+  .ms-btn{min-width:110px;font-size:11px}
+  
+  /* Alert strip */
+  .alert-item{font-size:11px;padding:7px 10px}
+  
+  /* Cumplimiento big numbers */
+  .cumpl-big{font-size:28px}
+  .cumpl-card{padding:.875rem 1rem}
+  
+  /* Charts height */
+  .chart-body{min-height:160px!important}
+}
+
+@media (max-width: 380px) {
+  .kpi-strip{grid-template-columns:1fr 1fr!important}
+  .kpi-val{font-size:16px}
+  .h-title{font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -1218,5 +1295,103 @@ document.addEventListener('click', e=>{
 loadAll();
 setInterval(()=>loadAll(),5*60*1000);
 </script>
-</body>
+
+<div id="pwaPrompt" style="display:none;position:fixed;bottom:70px;left:12px;right:12px;background:#1a1a1a;border:1px solid rgba(245,196,0,0.3);border-radius:12px;padding:14px 16px;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="width:36px;height:36px;background:var(--qk-yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#000;flex-shrink:0">Q</div>
+    <div style="flex:1">
+      <div style="color:#fff;font-size:13px;font-weight:600;margin-bottom:2px">Instalar SmartQuick</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:11px">Agregar a pantalla de inicio</div>
+    </div>
+    <button id="pwaInstallBtn" style="background:var(--qk-yellow);color:#000;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Instalar</button>
+    <button onclick="document.getElementById('pwaPrompt').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:18px;cursor:pointer;padding:0;line-height:1">×</button>
+  </div>
+</div>
+
+<nav class="mob-nav">
+  <div class="mob-nav-inner">
+    <button class="mob-nav-item active" data-page="planvuelo" onclick="showPage(this);closeMobOthers(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Torre</span>
+      <span class="mob-badge" id="mobAlertBadge" style="display:none">!</span>
+    </button>
+    <button class="mob-nav-item" data-page="historico" onclick="showPage(this);closeMobOthers(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Histórico</span>
+    </button>
+    <button class="mob-nav-item" data-page="ciudades" onclick="showPage(this);closeMobOthers(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8z"/></svg>
+      <span>Ciudades</span>
+    </button>
+    <button class="mob-nav-item" data-page="cumplimiento" onclick="showPage(this);closeMobOthers(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      <span>Cumpl.</span>
+    </button>
+    <button class="mob-nav-item" data-page="pendientes" onclick="showPage(this);closeMobOthers(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Pendientes</span>
+      <span class="mob-badge" id="mobPendBadge" style="display:none">!</span>
+    </button>
+  </div>
+</nav>
+<script>
+// ─── MOBILE NAV SYNC ──────────────────────────────────────
+function closeMobOthers(el){
+  document.querySelectorAll('.mob-nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  // Sync sidebar
+  const page = el.dataset.page;
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active', n.dataset.page===page);
+  });
+}
+
+// Sync sidebar clicks to mobile nav
+const _origShowPage = showPage;
+window.showPage = function(el){
+  _origShowPage(el);
+  const page = el.dataset.page;
+  document.querySelectorAll('.mob-nav-item').forEach(n=>{
+    n.classList.toggle('active', n.dataset.page===page);
+  });
+};
+
+// Sync alert badges to mobile nav
+const _origLoadAll = loadAll;
+
+// Badge sync after load
+function syncMobBadges(){
+  const ab = document.getElementById('alertBadge');
+  const mab = document.getElementById('mobAlertBadge');
+  if(ab && mab){ mab.style.display=ab.style.display; mab.textContent=ab.textContent; }
+  const pb = document.getElementById('pendientesBadge');
+  const mpb = document.getElementById('mobPendBadge');
+  if(pb && mpb){ mpb.style.display=pb.style.display; mpb.textContent=pb.textContent; }
+}
+setInterval(syncMobBadges, 2000);
+
+// ─── PWA INSTALL ──────────────────────────────────────────
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const isMobile = window.innerWidth <= 768;
+  if(isMobile) setTimeout(()=>{ document.getElementById('pwaPrompt').style.display='block'; }, 3000);
+});
+document.getElementById('pwaInstallBtn')?.addEventListener('click', async () => {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('pwaPrompt').style.display='none';
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('pwaPrompt').style.display='none';
+});
+
+// Register service worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script></body>
 </html>
