@@ -227,6 +227,11 @@ tbody td{padding:9px 14px}
     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
     Clientes (CEDI)
   </div>
+  <div class="nav-item" data-page="pendientes" onclick="showPage(this)">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Guías Pendientes
+    <span class="nav-badge" id="pendientesBadge" style="display:none">!</span>
+  </div>
   <div class="sidebar-footer">
     <div class="sf-label">Último sync</div>
     <div class="sf-value" id="sidebarSync">—</div>
@@ -453,6 +458,60 @@ tbody td{padding:9px 14px}
   </div>
 </section>
 
+<!-- ===== GUÍAS PENDIENTES ===== -->
+<section class="page" id="page-pendientes">
+  <div class="fbar">
+    <span class="fbar-label">⚠️ Guías sin finalizar</span>
+    <div class="fbar-sep"></div>
+    <select class="sel" id="pend-nivel" onchange="filterPendientes()">
+      <option value="">Todos los niveles</option>
+      <option value="CRITICO">🔴 Crítico (+30 días)</option>
+      <option value="ALTO">🟠 Alto (15-29 días)</option>
+      <option value="MEDIO">🟡 Medio (7-14 días)</option>
+      <option value="BAJO">🟢 Bajo (2-6 días)</option>
+      <option value="RECIENTE">⚪ Reciente (hoy/ayer)</option>
+    </select>
+    <select class="sel" id="pend-status" onchange="filterPendientes()">
+      <option value="">Todos los estados</option>
+      <option value="No asignado">No asignado</option>
+      <option value="Fallido">Fallido</option>
+      <option value="Asignado">Asignado</option>
+      <option value="En Bodega">En Bodega</option>
+      <option value="Llegada">Llegada</option>
+      <option value="Aceptado">Aceptado</option>
+    </select>
+    <span class="fbar-info" id="pend-info">—</span>
+  </div>
+
+  <!-- KPI resumen -->
+  <div class="kpi-strip" id="pendKpis"><div class="loading-wrap"><div class="spinner"></div></div></div>
+
+  <!-- Gráfico resumen -->
+  <div class="charts-row col2">
+    <div class="chart-card">
+      <div class="cc-hdr"><span class="cc-title">Pendientes por estado y antigüedad</span></div>
+      <div class="chart-body" style="min-height:220px"><canvas id="pendChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="cc-hdr"><span class="cc-title">Distribución por nivel de alerta</span></div>
+      <div class="chart-body" style="min-height:180px"><canvas id="pendDonut"></canvas></div>
+      <div class="donut-legend" id="pendDonutLegend"></div>
+    </div>
+  </div>
+
+  <!-- Tabla detalle -->
+  <div class="tbl-card">
+    <div class="tbl-hdr">
+      <div class="tbl-hdr-l">
+        <h3>Detalle de guías pendientes</h3>
+        <span class="tbl-count" id="pendCount">—</span>
+      </div>
+      <input class="tbl-search" id="pendSearch" placeholder="Buscar guía, ciudad..." oninput="filterPendientes()">
+    </div>
+    <div id="pendTbl"></div>
+  </div>
+</section>
+
 </main>
 </div>
 
@@ -460,6 +519,86 @@ tbody td{padding:9px 14px}
 const API = 'https://n8n.srv1729021.hstgr.cloud/webhook';
 let charts = {};
 let rawKpis = [], rawCiudades = [], rawClientes = [];
+let rawPendientesResumen = [], rawPendientesDetalle = [];
+
+function renderPendientes(){
+  const resumen = rawPendientesResumen;
+  const total    = resumen.reduce((s,d)=>s+parseInt(d.guias||0),0);
+  const criticos = resumen.filter(d=>d.nivel_alerta==='CRITICO').reduce((s,d)=>s+parseInt(d.guias||0),0);
+  const altos    = resumen.filter(d=>d.nivel_alerta==='ALTO').reduce((s,d)=>s+parseInt(d.guias||0),0);
+  const medios   = resumen.filter(d=>d.nivel_alerta==='MEDIO').reduce((s,d)=>s+parseInt(d.guias||0),0);
+  const estados  = [...new Set(resumen.map(d=>d.status))].length;
+  const recientes= resumen.filter(d=>d.nivel_alerta==='RECIENTE').reduce((s,d)=>s+parseInt(d.guias||0),0);
+
+  const badge = document.getElementById('pendientesBadge');
+  if(criticos>0){ badge.style.display=''; badge.textContent=criticos; }
+
+  document.getElementById('pendKpis').innerHTML = `
+    ${kpiCard('TOTAL PENDIENTES',fmt(total),'Sin finalizar','down','#dc2626')}
+    ${kpiCard('CRÍTICOS +30 DÍAS',fmt(criticos),'Acción inmediata',criticos>0?'down':'neutral','#dc2626')}
+    ${kpiCard('ALTO 15-29 DÍAS',fmt(altos),'Seguimiento urgente',altos>0?'down':'neutral','#d97706')}
+    ${kpiCard('MEDIO 7-14 DÍAS',fmt(medios),'Monitorear','neutral','#F5C400')}
+    ${kpiCard('ESTADOS ACTIVOS',fmt(estados),'Tipos de pendiente','neutral','#1B4FD8')}
+    ${kpiCard('RECIENTES HOY',fmt(recientes),'Hoy/Ayer','neutral','#9ca3af')}
+  `;
+
+  const estados_list=[...new Set(resumen.map(d=>d.status))];
+  const niveles=['CRITICO','ALTO','MEDIO','BAJO','RECIENTE'];
+  const nColores={'CRITICO':'rgba(220,38,38,0.8)','ALTO':'rgba(217,119,6,0.8)','MEDIO':'rgba(245,196,0,0.8)','BAJO':'rgba(59,130,246,0.6)','RECIENTE':'rgba(156,163,175,0.6)'};
+  const datasets=niveles.map(n=>({
+    label:n, backgroundColor:nColores[n], borderRadius:3,
+    data:estados_list.map(e=>{const r=resumen.find(d=>d.status===e&&d.nivel_alerta===n);return r?parseInt(r.guias):0;})
+  })).filter(d=>d.data.some(v=>v>0));
+  destroyChart('pendChart');
+  charts['pendChart']=new Chart(document.getElementById('pendChart'),{type:'bar',
+    data:{labels:estados_list,datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:8}}},
+      scales:{x:{stacked:true,ticks:{font:{size:10}}},y:{stacked:true,ticks:{font:{size:10}}}}}
+  });
+
+  const dNiveles=['CRITICO','ALTO','MEDIO','BAJO','RECIENTE'];
+  const dVals=dNiveles.map(n=>resumen.filter(d=>d.nivel_alerta===n).reduce((s,d)=>s+parseInt(d.guias||0),0));
+  const dClrs=['#dc2626','#d97706','#F5C400','#3b82f6','#9ca3af'];
+  destroyChart('pendDonut');
+  charts['pendDonut']=new Chart(document.getElementById('pendDonut'),{type:'doughnut',
+    data:{labels:dNiveles,datasets:[{data:dVals,backgroundColor:dClrs,borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}
+  });
+  document.getElementById('pendDonutLegend').innerHTML=dNiveles.map((l,i)=>
+    `<div class="dl-item"><div class="dl-dot" style="background:${dClrs[i]}"></div><span class="dl-label">${l}</span><span class="dl-val">${fmt(dVals[i])}</span></div>`
+  ).join('');
+  filterPendientes();
+}
+
+function filterPendientes(){
+  const nivel =(document.getElementById('pend-nivel')?.value)||'';
+  const status=(document.getElementById('pend-status')?.value)||'';
+  const q     =(document.getElementById('pendSearch')?.value||'').toLowerCase();
+  let data=rawPendientesDetalle;
+  if(nivel)  data=data.filter(d=>d.nivel_alerta===nivel);
+  if(status) data=data.filter(d=>d.status===status);
+  if(q)      data=data.filter(d=>(d.service_id||'').toLowerCase().includes(q)||(d.city||'').toLowerCase().includes(q)||(d.client||'').toLowerCase().includes(q));
+  document.getElementById('pend-info').textContent=`${fmt(data.length)} guías`;
+  document.getElementById('pendCount').textContent=fmt(data.length)+' guías';
+  const nb=v=>{
+    const cls={'CRITICO':'red','ALTO':'amber','MEDIO':'','BAJO':'blue','RECIENTE':''}[v]||'';
+    const ic={'CRITICO':'🔴','ALTO':'🟠','MEDIO':'🟡','BAJO':'🟢','RECIENTE':'⚪'}[v]||'';
+    return `<span class="badge badge-${cls}">${ic} ${v}</span>`;
+  };
+  document.getElementById('pendTbl').innerHTML=data.length?`<table>
+    <thead><tr><th>Guía</th><th>Cliente</th><th>Ciudad</th><th>Estado</th><th>Fecha</th><th>Días</th><th>Alerta</th></tr></thead>
+    <tbody>${data.map(d=>`<tr>
+      <td class="td-mono" style="font-size:11px">${d.service_id}</td>
+      <td class="td-name" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.client||'—'}</td>
+      <td class="td-muted">${d.city||'—'}</td>
+      <td><span class="badge badge-${d.status==='Fallido'?'red':d.status==='No asignado'?'amber':'blue'}">${d.status}</span></td>
+      <td class="td-mono td-muted">${(d.fecha_creacion||'').substr(0,10)}</td>
+      <td class="td-mono" style="font-weight:600;color:${parseInt(d.dias_pendiente)>=30?'var(--red)':parseInt(d.dias_pendiente)>=15?'var(--amber)':'var(--text-2)'}">${d.dias_pendiente}d</td>
+      <td>${nb(d.nivel_alerta)}</td>
+    </tr>`).join('')}</tbody></table>`
+    :'<div class="empty-msg">Sin guías con los filtros seleccionados</div>';
+}
 let allCiudades = [], allCedis = [];
 let msState = {}; // { id: Set of selected values }
 
@@ -1030,12 +1169,15 @@ function buildSemanas(data){
 // ─── LOAD ALL ────────────────────────────────────────────
 async function loadAll(manual){
   try {
-    const [kpis,ciudades,clientes]=await Promise.all([
+    const [kpis,ciudades,clientes,pendResumen,pendDetalle]=await Promise.all([
       fetchAPI('api/kpis-diarios'),
       fetchAPI('api/cumplimiento-ciudad'),
-      fetchAPI('api/ranking-clientes')
+      fetchAPI('api/ranking-clientes'),
+      fetchAPI('api/pendientes-resumen'),
+      fetchAPI('api/pendientes-detalle')
     ]);
     rawKpis=kpis; rawCiudades=ciudades; rawClientes=clientes;
+    rawPendientesResumen=pendResumen; rawPendientesDetalle=pendDetalle;
 
     // Ciudades únicas para multi-selects
     allCiudades=[...new Set(ciudades.map(d=>d.city).filter(Boolean))].sort();
@@ -1059,6 +1201,7 @@ async function loadAll(manual){
     renderCiudades();
     renderCumplimiento();
     renderClientes();
+    renderPendientes();
   } catch(e){ console.error(e); }
 }
 
