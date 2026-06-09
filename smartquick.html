@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Torre de Control — Centro de Control Operativo</title>
+<title>SmartQuick — Centro de Control Operativo</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -182,12 +182,6 @@ tbody td{padding:9px 14px}
 .shdr h2{font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:.5px;text-transform:uppercase}
 .shdr span{font-size:11px;color:var(--text-3)}
 </style>
-
-<meta name="theme-color" content="#0D0D0D">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.json">
-<!-- v20260609_192143 -->
 </head>
 <body>
 
@@ -737,7 +731,7 @@ async function fetchAPI(path){
 
 // ─── FILTER DATA ─────────────────────────────────────────
 function filterKpis(mes, semana, ciudades){
-  let data = rawKpis.filter(d=>d.fecha && new Date(d.fecha).getFullYear()>=2026);
+  let data = rawKpis.filter(d=>d.fecha);
   if(mes)    data = data.filter(d=>getMes(d.fecha)===mes);
   if(semana) data = data.filter(d=>getSemana(d.fecha)===semana);
   // ciudades filter: rawCiudades tiene por ciudad/fecha
@@ -786,8 +780,7 @@ function buildKpis(data, ciuData, ciudades){
 async function renderPV(){
   const ciudades = getSelectedCiudades('ms-pv');
   const kpis  = rawKpis.filter(d=>d.fecha);
-  const todayStr = new Date().toLocaleDateString('en-CA', {timeZone:'America/Bogota'});
-  const today = kpis.find(d=>d.fecha && d.fecha.substr(0,10)===todayStr) || (kpis.length>0?kpis[0]:null);
+  const today = kpis.length>0?kpis[kpis.length-1]:null;
   let ciuHoy  = rawCiudadesHoy; // solo datos de hoy
   if(ciudades) ciuHoy = ciuHoy.filter(d=>ciudades.includes(d.city));
 
@@ -893,7 +886,7 @@ function renderHistorico(){
   const semana  = document.getElementById('hist-semana').value;
   const ciudades= getSelectedCiudades('ms-hist');
 
-  let data = rawKpis.filter(d=>d.fecha && new Date(d.fecha).getFullYear()>=2026);
+  let data = rawKpis.filter(d=>d.fecha);
   if(mes)    data=data.filter(d=>getMes(d.fecha)===mes);
   if(semana) data=data.filter(d=>getSemana(d.fecha)===semana);
 
