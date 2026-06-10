@@ -2,198 +2,363 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<!-- v2.1 --><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartQuick — Centro de Control Operativo</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartQuick — Torre de Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root {
-  --qk-black:#0D0D0D; --qk-yellow:#F5C400; --qk-yellow-dim:rgba(245,196,0,0.12);
-  --qk-blue:#1B4FD8; --qk-orange:#F47B20;
-  --sidebar-w:220px; --header-h:52px;
-  --surface:#F4F3EF; --card:#FFFFFF; --border:rgba(13,13,13,0.08); --border-med:rgba(13,13,13,0.14);
-  --text-1:#0D0D0D; --text-2:#4A4A46; --text-3:#9A9994;
-  --green:#16a34a; --green-bg:#f0fdf4; --red:#dc2626; --red-bg:#fef2f2;
-  --amber:#d97706; --amber-bg:#fffbeb; --radius:8px; --radius-lg:12px;
+  --bg:       #0A0A0A;
+  --surface:  #111111;
+  --card:     #161616;
+  --card-2:   #1C1C1C;
+  --border:   rgba(255,255,255,0.07);
+  --border-2: rgba(255,255,255,0.12);
+  --gold:     #F5C400;
+  --gold-dim: rgba(245,196,0,0.10);
+  --gold-mid: rgba(245,196,0,0.20);
+  --text-1:   #F0F0F0;
+  --text-2:   #A0A0A0;
+  --text-3:   #555555;
+  --green:    #22C55E;
+  --green-dim:rgba(34,197,94,0.12);
+  --red:      #EF4444;
+  --red-dim:  rgba(239,68,68,0.12);
+  --amber:    #F59E0B;
+  --amber-dim:rgba(245,158,11,0.12);
+  --blue:     #3B82F6;
+  --blue-dim: rgba(59,130,246,0.12);
+  --sidebar-w:200px;
+  --header-h: 50px;
+  --radius:   6px;
+  --radius-lg:10px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface);color:var(--text-1);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-1);display:flex;flex-direction:column;height:100vh;overflow:hidden}
 
-/* HEADER */
-.header{height:var(--header-h);background:var(--qk-black);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;z-index:50}
-.h-left{display:flex;align-items:center;gap:12px}
-.logo-badge{width:30px;height:30px;background:var(--qk-yellow);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:14px;color:var(--qk-black)}
-.h-title{color:#fff;font-size:14px;font-weight:500} .h-title em{color:var(--qk-yellow);font-style:normal}
-.h-div{width:1px;height:18px;background:rgba(255,255,255,0.12)}
-.h-sub{color:rgba(255,255,255,0.35);font-size:11.5px;font-family:'IBM Plex Mono',monospace}
-.h-right{display:flex;align-items:center;gap:12px}
-.live-pill{display:flex;align-items:center;gap:6px;background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.3);border-radius:20px;padding:4px 10px}
-.live-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;animation:blink 2s ease infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-.live-text{font-size:11px;color:#4ade80;font-family:'IBM Plex Mono',monospace}
-.h-time{font-size:11px;color:rgba(255,255,255,0.3);font-family:'IBM Plex Mono',monospace}
-.btn-refresh{display:flex;align-items:center;gap:5px;background:var(--qk-yellow);color:var(--qk-black);border:none;border-radius:6px;padding:6px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:opacity .15s}
+/* ── HEADER ── */
+.header{
+  height:var(--header-h);background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.25rem;flex-shrink:0;z-index:50;
+}
+.h-left{display:flex;align-items:center;gap:10px}
+.logo{
+  width:28px;height:28px;background:var(--gold);border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-weight:500;font-size:13px;color:#000;
+  flex-shrink:0;
+}
+.h-brand{font-size:13px;font-weight:600;color:var(--text-1);letter-spacing:-.2px}
+.h-brand em{color:var(--gold);font-style:normal}
+.h-sep{width:1px;height:16px;background:var(--border-2);flex-shrink:0}
+.h-sub{font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace}
+.h-right{display:flex;align-items:center;gap:10px}
+.live-pill{
+  display:flex;align-items:center;gap:5px;
+  border:1px solid rgba(34,197,94,0.25);border-radius:20px;
+  padding:3px 9px;background:rgba(34,197,94,0.06);
+}
+.live-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.live-txt{font-size:10px;color:var(--green);font-weight:600;letter-spacing:.5px}
+.h-time{font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace}
+.btn-refresh{
+  display:flex;align-items:center;gap:5px;
+  background:var(--gold);color:#000;border:none;border-radius:5px;
+  padding:5px 11px;font-size:11px;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;letter-spacing:.2px;transition:opacity .15s;
+}
 .btn-refresh:hover{opacity:.85}
-.btn-refresh svg{width:12px;height:12px}
+.btn-refresh svg{width:11px;height:11px}
 
-/* SHELL */
+/* ── SHELL ── */
 .shell{display:flex;flex:1;overflow:hidden}
 
-/* SIDEBAR */
-.sidebar{width:var(--sidebar-w);background:var(--qk-black);flex-shrink:0;display:flex;flex-direction:column;padding:1rem 0;overflow-y:auto}
-.nav-section{font-size:9.5px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 1.25rem;margin:1rem 0 6px}
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);background:var(--surface);
+  border-right:1px solid var(--border);
+  flex-shrink:0;display:flex;flex-direction:column;
+  padding:.75rem 0;overflow-y:auto;
+}
+.nav-section{
+  font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--text-3);padding:0 1rem;margin:1rem 0 4px;
+}
 .nav-section:first-child{margin-top:0}
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 1.25rem;cursor:pointer;color:rgba(255,255,255,0.45);font-size:12.5px;transition:all .15s;border-left:2px solid transparent;margin:1px 0;user-select:none}
-.nav-item:hover{color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.04)}
-.nav-item.active{color:var(--qk-yellow);border-left-color:var(--qk-yellow);background:rgba(245,196,0,0.07);font-weight:500}
-.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item{
+  display:flex;align-items:center;gap:9px;padding:7px 1rem;
+  cursor:pointer;color:var(--text-2);font-size:12px;font-weight:400;
+  transition:all .12s;border-left:2px solid transparent;
+  margin:1px 0;user-select:none;
+}
+.nav-item:hover{color:var(--text-1);background:rgba(255,255,255,0.03)}
+.nav-item.active{
+  color:var(--gold);border-left-color:var(--gold);
+  background:var(--gold-dim);font-weight:500;
+}
+.nav-icon{width:14px;height:14px;flex-shrink:0;opacity:.6}
 .nav-item.active .nav-icon{opacity:1}
-.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:600;border-radius:10px;padding:1px 6px;font-family:'IBM Plex Mono',monospace}
-.sidebar-footer{margin-top:auto;padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,0.06)}
-.sf-label{font-size:10px;color:rgba(255,255,255,0.2);margin-bottom:2px}
-.sf-value{font-size:11px;font-family:'IBM Plex Mono',monospace;color:rgba(255,255,255,0.35)}
+.nav-badge{
+  margin-left:auto;background:var(--red);color:#fff;
+  font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;
+  font-family:'JetBrains Mono',monospace;
+}
+.sidebar-footer{
+  margin-top:auto;padding:.85rem 1rem;
+  border-top:1px solid var(--border);
+}
+.sf-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.sf-row:last-child{margin-bottom:0}
+.sf-label{font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.8px;text-transform:uppercase}
+.sf-value{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text-2)}
 
-/* MAIN */
-.main{flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:1rem}
-.main::-webkit-scrollbar{width:5px}
-.main::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.1);border-radius:10px}
-
-/* PAGE */
-.page{display:none;flex-direction:column;gap:1rem}
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.85rem}
+.main::-webkit-scrollbar{width:4px}
+.main::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:10px}
+.page{display:none;flex-direction:column;gap:.85rem}
 .page.active{display:flex}
 
-/* FILTER BAR */
-.fbar{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.fbar-label{font-size:11px;color:var(--text-3);font-weight:500;white-space:nowrap}
-.fbar-sep{width:1px;height:20px;background:var(--border-med);flex-shrink:0}
-.fbar-info{margin-left:auto;font-size:11px;color:var(--text-3);font-family:'IBM Plex Mono',monospace}
-.fbar-clear{font-size:11px;color:var(--qk-blue);cursor:pointer;background:none;border:none;font-family:'IBM Plex Sans',sans-serif;padding:0}
-.fbar-clear:hover{text-decoration:underline}
+/* ── FILTER BAR ── */
+.fbar{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:8px 12px;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.fbar-label{font-size:10.5px;color:var(--text-3);font-weight:500;white-space:nowrap}
+.fbar-sep{width:1px;height:18px;background:var(--border-2);flex-shrink:0}
+.fbar-info{margin-left:auto;font-size:10.5px;color:var(--text-3);font-family:'JetBrains Mono',monospace}
+.fbar-clear{font-size:10.5px;color:var(--gold);cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;padding:0;opacity:.8}
+.fbar-clear:hover{opacity:1}
 
-/* MULTI-SELECT */
+/* ── MULTI-SELECT ── */
 .ms-wrap{position:relative}
-.ms-btn{display:flex;align-items:center;gap:6px;border:1px solid var(--border-med);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--text-1);background:var(--surface);cursor:pointer;font-family:'IBM Plex Sans',sans-serif;white-space:nowrap;min-width:130px}
-.ms-btn svg{width:12px;height:12px;color:var(--text-3);margin-left:auto;flex-shrink:0}
-.ms-btn.has-selection{border-color:var(--qk-blue);background:#EFF6FF;color:var(--qk-blue)}
-.ms-dropdown{position:absolute;top:calc(100% + 4px);left:0;background:var(--card);border:1px solid var(--border-med);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:200;min-width:200px;max-height:280px;overflow-y:auto;display:none}
+.ms-btn{
+  display:flex;align-items:center;gap:5px;
+  border:1px solid var(--border-2);border-radius:5px;
+  padding:4px 9px;font-size:11px;color:var(--text-2);
+  background:var(--card-2);cursor:pointer;
+  font-family:'Inter',sans-serif;white-space:nowrap;min-width:120px;
+}
+.ms-btn svg{width:10px;height:10px;color:var(--text-3);margin-left:auto;flex-shrink:0}
+.ms-btn.has-selection{border-color:var(--gold);background:var(--gold-dim);color:var(--gold)}
+.ms-dropdown{
+  position:absolute;top:calc(100% + 4px);left:0;
+  background:var(--card-2);border:1px solid var(--border-2);
+  border-radius:var(--radius);box-shadow:0 12px 32px rgba(0,0,0,0.5);
+  z-index:200;min-width:190px;max-height:260px;overflow-y:auto;display:none;
+}
 .ms-dropdown.open{display:block}
-.ms-search{border:none;border-bottom:1px solid var(--border);padding:8px 12px;width:100%;font-size:12px;font-family:'IBM Plex Sans',sans-serif;outline:none}
-.ms-option{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;font-size:12px;color:var(--text-1);transition:background .1s}
-.ms-option:hover{background:var(--surface)}
-.ms-option input[type=checkbox]{width:13px;height:13px;accent-color:var(--qk-blue);flex-shrink:0}
-.ms-option.all-opt{font-weight:500;border-bottom:1px solid var(--border)}
-.ms-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.chip{display:flex;align-items:center;gap:4px;background:var(--qk-yellow-dim);border:1px solid rgba(245,196,0,0.3);border-radius:20px;padding:2px 8px;font-size:10.5px;font-weight:500;color:var(--qk-black)}
-.chip-x{cursor:pointer;font-size:11px;line-height:1;opacity:.6}
+.ms-search{
+  border:none;border-bottom:1px solid var(--border);
+  padding:7px 10px;width:100%;font-size:11px;
+  font-family:'Inter',sans-serif;outline:none;
+  background:transparent;color:var(--text-1);
+}
+.ms-option{
+  display:flex;align-items:center;gap:7px;padding:6px 10px;
+  cursor:pointer;font-size:11px;color:var(--text-2);transition:background .1s;
+}
+.ms-option:hover{background:rgba(255,255,255,0.04)}
+.ms-option input[type=checkbox]{width:12px;height:12px;accent-color:var(--gold);flex-shrink:0}
+.ms-option.all-opt{font-weight:500;border-bottom:1px solid var(--border);color:var(--text-1)}
+.ms-chips{display:flex;flex-wrap:wrap;gap:3px}
+.chip{
+  display:flex;align-items:center;gap:3px;
+  background:var(--gold-dim);border:1px solid rgba(245,196,0,0.2);
+  border-radius:20px;padding:2px 7px;font-size:10px;font-weight:500;color:var(--gold);
+}
+.chip-x{cursor:pointer;opacity:.6}
 .chip-x:hover{opacity:1}
 
-/* SELECT simple */
-.sel{border:1px solid var(--border-med);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--text-1);font-family:'IBM Plex Sans',sans-serif;background:var(--surface);cursor:pointer;outline:none}
-.sel:focus{border-color:var(--qk-blue)}
+/* ── SELECT ── */
+.sel{
+  border:1px solid var(--border-2);border-radius:5px;
+  padding:4px 9px;font-size:11px;color:var(--text-2);
+  font-family:'Inter',sans-serif;background:var(--card-2);cursor:pointer;outline:none;
+}
+.sel:focus{border-color:var(--gold)}
+.sel option{background:var(--card-2)}
 
-/* KPI STRIP */
-.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:.9rem 1rem;position:relative;overflow:hidden;transition:box-shadow .15s,transform .15s}
-.kpi-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.07);transform:translateY(-1px)}
-.kpi-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--accent,var(--qk-blue))}
-.kpi-label{font-size:10px;color:var(--text-3);font-weight:500;letter-spacing:.3px;margin-bottom:6px}
-.kpi-val{font-size:22px;font-weight:600;color:var(--text-1);line-height:1;font-family:'IBM Plex Mono',monospace}
-.kpi-sub{display:flex;align-items:center;gap:4px;margin-top:5px}
-.kpi-delta{font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:500}
+/* ── SECTION HDR ── */
+.shdr{display:flex;align-items:baseline;justify-content:space-between;padding:0 2px}
+.shdr h2{font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:1.2px;text-transform:uppercase}
+.shdr span{font-size:10.5px;color:var(--gold);font-weight:500}
+
+/* ── KPI STRIP ── */
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.kpi-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:.85rem .95rem;
+  position:relative;overflow:hidden;
+  transition:border-color .15s,transform .15s;cursor:default;
+}
+.kpi-card:hover{border-color:var(--border-2);transform:translateY(-1px)}
+.kpi-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--accent,var(--gold));opacity:.6;
+}
+.kpi-label{font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px}
+.kpi-val{font-size:20px;font-weight:700;color:var(--text-1);line-height:1;font-family:'JetBrains Mono',monospace;letter-spacing:-1px}
+.kpi-sub{display:flex;align-items:center;gap:4px;margin-top:6px}
+.kpi-delta{font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:600}
 .kpi-delta.up{color:var(--green)} .kpi-delta.down{color:var(--red)} .kpi-delta.neutral{color:var(--text-3)}
-.kpi-sublabel{font-size:10px;color:var(--text-3)}
+.kpi-sublabel{font-size:9.5px;color:var(--text-3)}
 
-/* CUMPL SPLIT */
-.cumpl-split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.cumpl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.1rem}
-.cumpl-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
-.cumpl-title{font-size:12px;font-weight:600;color:var(--text-1)}
-.cumpl-formula{font-size:10px;color:var(--text-3);font-family:'IBM Plex Mono',monospace;background:var(--surface);padding:2px 8px;border-radius:4px}
-.cumpl-big{font-size:36px;font-weight:600;font-family:'IBM Plex Mono',monospace;margin-bottom:4px}
-.cumpl-detail{font-size:11px;color:var(--text-3)}
-
-/* CHARTS */
-.charts-row{display:grid;gap:12px}
+/* ── CHARTS ── */
+.charts-row{display:grid;gap:8px}
 .charts-row.col2{grid-template-columns:1fr 1fr}
-.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;display:flex;flex-direction:column}
-.cc-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.cc-title{font-size:12.5px;font-weight:600;color:var(--text-1)}
-.cc-badge{font-size:10px;border-radius:20px;padding:3px 9px;font-weight:600;font-family:'IBM Plex Mono',monospace}
-.cc-badge.green{background:var(--green-bg);color:var(--green)}
-.cc-badge.blue{background:#EFF6FF;color:var(--qk-blue)}
+.charts-row.col3{grid-template-columns:1fr 1fr 1fr}
+.chart-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:1rem 1.1rem;
+  display:flex;flex-direction:column;
+}
+.cc-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem}
+.cc-title{font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:.1px}
+.cc-badge{
+  font-size:9.5px;border-radius:20px;padding:2px 7px;
+  font-weight:600;font-family:'JetBrains Mono',monospace;
+}
+.cc-badge.gold{background:var(--gold-dim);color:var(--gold)}
+.cc-badge.green{background:var(--green-dim);color:var(--green)}
+.cc-badge.blue{background:var(--blue-dim);color:var(--blue)}
 .chart-body{flex:1;position:relative;min-height:180px}
 
-/* TABLE */
-.tbl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
-.tbl-hdr{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;border-bottom:1px solid var(--border)}
-.tbl-hdr-l{display:flex;align-items:center;gap:10px}
-.tbl-hdr h3{font-size:12.5px;font-weight:600}
-.tbl-count{font-size:10.5px;color:var(--text-3);background:var(--surface);border-radius:20px;padding:2px 8px}
-.tbl-search{border:1px solid var(--border-med);border-radius:6px;padding:5px 10px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;background:var(--surface);color:var(--text-1);outline:none;width:160px}
-.tbl-search:focus{border-color:var(--qk-blue)}
-table{width:100%;border-collapse:collapse;font-size:12px}
-thead th{background:#FAFAF8;padding:8px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border);white-space:nowrap}
+/* ── TABLE ── */
+.tbl-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+}
+.tbl-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.8rem 1.1rem;border-bottom:1px solid var(--border);
+}
+.tbl-hdr-l{display:flex;align-items:center;gap:8px}
+.tbl-hdr h3{font-size:11px;font-weight:600;color:var(--text-2)}
+.tbl-count{
+  font-size:9.5px;color:var(--text-3);
+  background:var(--card-2);border-radius:20px;padding:2px 7px;
+  font-family:'JetBrains Mono',monospace;
+}
+.tbl-search{
+  border:1px solid var(--border-2);border-radius:5px;
+  padding:4px 9px;font-size:11px;font-family:'Inter',sans-serif;
+  background:var(--card-2);color:var(--text-1);outline:none;width:150px;
+}
+.tbl-search:focus{border-color:var(--gold)}
+.tbl-search::placeholder{color:var(--text-3)}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+thead th{
+  background:var(--card-2);padding:7px 12px;text-align:left;
+  font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--text-3);border-bottom:1px solid var(--border);white-space:nowrap;
+}
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:#FAFAF8}
-tbody td{padding:9px 14px}
-.td-mono{font-family:'IBM Plex Mono',monospace;font-size:11.5px}
-.td-name{font-weight:500}
-.td-muted{color:var(--text-3);font-size:11px}
+tbody tr:hover{background:rgba(255,255,255,0.025)}
+tbody td{padding:8px 12px}
+.td-mono{font-family:'JetBrains Mono',monospace;font-size:11px}
+.td-name{font-weight:500;color:var(--text-1)}
+.td-muted{color:var(--text-3);font-size:10.5px}
 
-/* BADGE */
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:600;font-family:'IBM Plex Mono',monospace;white-space:nowrap}
-.badge-green{background:var(--green-bg);color:var(--green)}
-.badge-amber{background:var(--amber-bg);color:var(--amber)}
-.badge-red{background:var(--red-bg);color:var(--red)}
-.badge-blue{background:#EFF6FF;color:var(--qk-blue)}
+/* ── BADGE ── */
+.badge{
+  display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;
+  font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;white-space:nowrap;
+}
+.badge-green{background:var(--green-dim);color:var(--green)}
+.badge-amber{background:var(--amber-dim);color:var(--amber)}
+.badge-red{background:var(--red-dim);color:var(--red)}
+.badge-blue{background:var(--blue-dim);color:var(--blue)}
 
-/* MBAR */
-.mbar{display:flex;align-items:center;gap:6px}
-.mbar-track{width:60px;height:3px;background:#EEECEA;border-radius:2px;overflow:hidden;flex-shrink:0}
+/* ── MBAR ── */
+.mbar{display:flex;align-items:center;gap:5px}
+.mbar-track{width:56px;height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;flex-shrink:0}
 .mbar-fill{height:100%;border-radius:2px}
 .mbar-fill.high{background:var(--green)} .mbar-fill.mid{background:var(--amber)} .mbar-fill.low{background:var(--red)}
 
-/* ALERT */
-.alert-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+/* ── ALERT STRIP ── */
+.alert-strip{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
 .alert-strip::-webkit-scrollbar{display:none}
-.alert-item{flex-shrink:0;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:11.5px}
-.alert-item.critical{border-left:3px solid var(--red)}
-.alert-item.warning{border-left:3px solid var(--amber)}
-.alert-item.good{border-left:3px solid var(--green)}
-.alert-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.alert-item{
+  flex-shrink:0;display:flex;align-items:center;gap:7px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:7px 11px;font-size:11px;
+}
+.alert-item.critical{border-left:2px solid var(--red)}
+.alert-item.warning{border-left:2px solid var(--amber)}
+.alert-item.good{border-left:2px solid var(--green)}
+.alert-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 .alert-dot.critical{background:var(--red)} .alert-dot.warning{background:var(--amber)} .alert-dot.good{background:var(--green)}
 
-/* DONUT LEGEND */
-.donut-legend{display:flex;flex-direction:column;gap:6px;margin-top:10px}
-.dl-item{display:flex;align-items:center;gap:8px;font-size:11.5px}
-.dl-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+/* ── DONUT LEGEND ── */
+.donut-legend{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+.dl-item{display:flex;align-items:center;gap:7px;font-size:11px}
+.dl-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
 .dl-label{flex:1;color:var(--text-2)}
-.dl-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-3)}
+.dl-val{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-3)}
 
-/* LOADING */
+/* ── CUMPL SPLIT ── */
+.cumpl-split{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cumpl-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:1rem 1.1rem;
+}
+.cumpl-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.cumpl-title{font-size:11px;font-weight:600;color:var(--text-2)}
+.cumpl-formula{
+  font-size:9.5px;color:var(--text-3);font-family:'JetBrains Mono',monospace;
+  background:var(--card-2);padding:2px 7px;border-radius:4px;
+}
+.cumpl-big{font-size:34px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:4px;letter-spacing:-2px}
+.cumpl-detail{font-size:10.5px;color:var(--text-3)}
+
+/* ── LOADING ── */
 .loading-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem;gap:10px;color:var(--text-3)}
-.spinner{width:24px;height:24px;border:2px solid var(--border-med);border-top-color:var(--qk-yellow);border-radius:50%;animation:spin .7s linear infinite}
+.spinner{width:22px;height:22px;border:2px solid rgba(255,255,255,0.07);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty-msg{font-size:12px;color:var(--text-3);text-align:center;padding:2rem}
+.empty-msg{font-size:11px;color:var(--text-3);text-align:center;padding:2rem}
 
-/* SECTION HDR */
-.shdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.5rem}
-.shdr h2{font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:.5px;text-transform:uppercase}
-.shdr span{font-size:11px;color:var(--text-3)}
+/* ── GAUGE RING (efectividad hero) ── */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.5rem 0}
+.gauge-ring{position:relative;width:120px;height:120px}
+.gauge-ring svg{transform:rotate(-90deg)}
+.gauge-center{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;
+}
+.gauge-pct{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1;letter-spacing:-1px}
+.gauge-lbl{font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:2px}
+
+/* ── CITY SCORECARD ── */
+.city-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
+.city-sc{
+  background:var(--card-2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:.65rem .75rem;cursor:default;transition:border-color .12s;
+}
+.city-sc:hover{border-color:var(--border-2)}
+.city-sc-name{font-size:10.5px;font-weight:600;color:var(--text-1);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.city-sc-pct{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1;letter-spacing:-1px}
+.city-sc-sub{font-size:9.5px;color:var(--text-3);margin-top:3px}
+.city-sc-bar{height:2px;background:rgba(255,255,255,0.07);border-radius:2px;margin-top:6px;overflow:hidden}
+.city-sc-fill{height:100%;border-radius:2px;transition:width .4s}
 </style>
 </head>
 <body>
 
 <header class="header">
   <div class="h-left">
-    <div class="logo-badge">Q</div>
-    <span class="h-title">Smart<em>Quick</em> — Torre de Control · <em>Quick Live</em></span>
-    <div class="h-div"></div>
+    <div class="logo">Q</div>
+    <span class="h-brand">Smart<em>Quick</em> — Torre de Control</span>
+    <div class="h-sep"></div>
     <span class="h-sub">Quick Help Courier S.A.S.</span>
   </div>
   <div class="h-right">
-    <div class="live-pill"><div class="live-dot"></div><span class="live-text">EN VIVO</span></div>
+    <div class="live-pill"><div class="live-dot"></div><span class="live-txt">EN VIVO</span></div>
     <span class="h-time" id="hTime">—</span>
     <button class="btn-refresh" onclick="refreshCurrent()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
@@ -233,21 +398,19 @@ tbody td{padding:9px 14px}
     <span class="nav-badge" id="pendientesBadge" style="display:none">!</span>
   </div>
   <div class="sidebar-footer">
-    <div class="sf-label">Último sync</div>
-    <div class="sf-value" id="sidebarSync">—</div>
-    <div class="sf-label" style="margin-top:8px">Base histórica</div>
-    <div class="sf-value" id="sidebarTotal">—</div>
+    <div class="sf-row"><span class="sf-label">Sync</span><span class="sf-value" id="sidebarSync">—</span></div>
+    <div class="sf-row"><span class="sf-label">Base</span><span class="sf-value" id="sidebarTotal">—</span></div>
   </div>
 </nav>
 
 <main class="main">
 
-<!-- ===== PLAN DE VUELO ===== -->
+<!-- ===== TORRE DE CONTROL ===== -->
 <section class="page active" id="page-planvuelo">
   <div class="fbar">
-    <span class="fbar-label">🗼 TORRE DE CONTROL · QUICK LIVE</span>
+    <span class="fbar-label">🗼 QUICK LIVE</span>
     <div class="fbar-sep"></div>
-    <span class="fbar-label">Filtrar ciudad:</span>
+    <span class="fbar-label">Ciudad:</span>
     <div class="ms-wrap" id="ms-pv">
       <button class="ms-btn" onclick="toggleMS('ms-pv')">
         <span id="ms-pv-label">Todas las ciudades</span>
@@ -267,24 +430,50 @@ tbody td{padding:9px 14px}
   <div class="shdr"><h2>KPIs del día</h2><span id="pvDate">—</span></div>
   <div class="kpi-strip" id="pvKpis"><div class="loading-wrap"><div class="spinner"></div></div></div>
 
-  <div class="shdr"><h2>Alertas operativas</h2><span id="pvAlertCount">—</span></div>
-  <div class="alert-strip" id="pvAlerts"></div>
-
+  <!-- Hero row: gauge + ciudad cards -->
   <div class="charts-row col2">
+    <div class="chart-card" id="pvHeroCard">
+      <div class="cc-hdr"><span class="cc-title">Efectividad operativa — hoy</span><span class="cc-badge gold" id="pvEfectBadge">—</span></div>
+      <div style="display:flex;gap:1rem;align-items:center;flex:1">
+        <div class="gauge-wrap" style="flex-shrink:0">
+          <div class="gauge-ring" id="pvGaugeWrap">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+              <circle id="pvGaugeArc" cx="60" cy="60" r="50" fill="none" stroke="#F5C400" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="314" stroke-dashoffset="314" style="transition:stroke-dashoffset 1s ease"/>
+            </svg>
+            <div class="gauge-center">
+              <div class="gauge-pct" id="pvGaugePct" style="color:var(--gold)">—</div>
+              <div class="gauge-lbl">efectividad</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+          <div id="pvStatRows"></div>
+        </div>
+      </div>
+    </div>
     <div class="chart-card">
       <div class="cc-hdr"><span class="cc-title">Servicios por estado — hoy</span></div>
       <div class="chart-body" style="min-height:160px"><canvas id="pvDonut"></canvas></div>
       <div class="donut-legend" id="pvDonutLegend"></div>
     </div>
-    <div class="chart-card">
-      <div class="cc-hdr"><span class="cc-title">Cumplimiento por ciudad — hoy</span><span class="cc-badge blue" id="pvCiudadBadge">—</span></div>
-      <div class="chart-body" style="min-height:200px"><canvas id="pvCiudadChart"></canvas></div>
+  </div>
+
+  <div class="shdr"><h2>Alertas operativas</h2><span id="pvAlertCount">—</span></div>
+  <div class="alert-strip" id="pvAlerts"></div>
+
+  <div class="chart-card">
+    <div class="cc-hdr">
+      <span class="cc-title">Cumplimiento por ciudad — hoy</span>
+      <span class="cc-badge gold" id="pvCiudadBadge">—</span>
     </div>
+    <div id="pvCityGrid" class="city-grid"></div>
   </div>
 
   <div class="tbl-card">
     <div class="tbl-hdr">
-      <div class="tbl-hdr-l"><h3>Detalle por ciudad — hoy</h3><span class="tbl-count" id="pvCiudadCount">—</span></div>
+      <div class="tbl-hdr-l"><h3>Detalle por ciudad</h3><span class="tbl-count" id="pvCiudadCount">—</span></div>
     </div>
     <div id="pvCiudadTbl"></div>
   </div>
@@ -296,26 +485,20 @@ tbody td{padding:9px 14px}
     <span class="fbar-label">📅 Período:</span>
     <select class="sel" id="hist-mes" onchange="renderHistorico()">
       <option value="">Todos los meses</option>
-      <option value="01">Enero 2026</option>
-      <option value="02">Febrero 2026</option>
-      <option value="03">Marzo 2026</option>
-      <option value="04">Abril 2026</option>
-      <option value="05">Mayo 2026</option>
-      <option value="06">Junio 2026</option>
+      <option value="01">Enero 2026</option><option value="02">Febrero 2026</option>
+      <option value="03">Marzo 2026</option><option value="04">Abril 2026</option>
+      <option value="05">Mayo 2026</option><option value="06">Junio 2026</option>
     </select>
-    <select class="sel" id="hist-semana" onchange="renderHistorico()">
-      <option value="">Todas las semanas</option>
-    </select>
+    <select class="sel" id="hist-semana" onchange="renderHistorico()"><option value="">Todas las semanas</option></select>
     <div class="fbar-sep"></div>
-    <span class="fbar-label">Ciudad:</span>
     <div class="ms-wrap" id="ms-hist">
       <button class="ms-btn" onclick="toggleMS('ms-hist')">
         <span id="ms-hist-label">Todas</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <div class="ms-dropdown" id="ms-hist-drop">
-        <input class="ms-search" placeholder="Buscar ciudad..." oninput="filterMSOptions('ms-hist',this.value)">
-        <div class="ms-option all-opt" onclick="toggleAllMS('ms-hist')"><input type="checkbox" id="ms-hist-all" checked> Todas las ciudades</div>
+        <input class="ms-search" placeholder="Buscar..." oninput="filterMSOptions('ms-hist',this.value)">
+        <div class="ms-option all-opt" onclick="toggleAllMS('ms-hist')"><input type="checkbox" id="ms-hist-all" checked> Todas</div>
         <div id="ms-hist-options"></div>
       </div>
     </div>
@@ -323,25 +506,26 @@ tbody td{padding:9px 14px}
     <button class="fbar-clear" onclick="clearMS('ms-hist');renderHistorico()">Limpiar</button>
     <span class="fbar-info" id="hist-info">—</span>
   </div>
-
   <div class="shdr"><h2>KPIs del período</h2><span id="histPeriod">—</span></div>
   <div class="kpi-strip" id="histKpis"><div class="loading-wrap"><div class="spinner"></div></div></div>
-
   <div class="chart-card">
-    <div class="cc-hdr"><span class="cc-title">Volumen por mes — Finalizados vs Cancelados</span><span class="cc-badge blue" id="histMesBadge">—</span></div>
+    <div class="cc-hdr"><span class="cc-title">Volumen mensual — Finalizados vs Cancelados</span><span class="cc-badge gold" id="histMesBadge">—</span></div>
     <div class="chart-body" style="min-height:200px"><canvas id="histMes"></canvas></div>
   </div>
-
   <div class="chart-card">
-    <div class="cc-hdr"><span class="cc-title">Volumen diario — Finalizados vs Cancelados</span><span class="cc-badge blue" id="histVolBadge">—</span></div>
+    <div class="cc-hdr"><span class="cc-title">Volumen diario acumulado</span><span class="cc-badge gold" id="histVolBadge">—</span></div>
     <div class="chart-body"><canvas id="histVol"></canvas></div>
   </div>
-
-  <div class="chart-card">
-    <div class="cc-hdr"><span class="cc-title">Tendencia de cumplimiento (%)</span></div>
-    <div class="chart-body" style="min-height:140px"><canvas id="histCumpl"></canvas></div>
+  <div class="charts-row col2">
+    <div class="chart-card">
+      <div class="cc-hdr"><span class="cc-title">Tendencia de cumplimiento (%)</span></div>
+      <div class="chart-body" style="min-height:160px"><canvas id="histCumpl"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="cc-hdr"><span class="cc-title">Ingreso diario (COP)</span></div>
+      <div class="chart-body" style="min-height:160px"><canvas id="histIng"></canvas></div>
+    </div>
   </div>
-
   <div class="charts-row col2">
     <div class="chart-card">
       <div class="cc-hdr"><span class="cc-title">Distribución de estados</span></div>
@@ -349,8 +533,8 @@ tbody td{padding:9px 14px}
       <div class="donut-legend" id="histDonutLegend"></div>
     </div>
     <div class="chart-card">
-      <div class="cc-hdr"><span class="cc-title">Ingreso diario (COP)</span></div>
-      <div class="chart-body"><canvas id="histIng"></canvas></div>
+      <div class="cc-hdr"><span class="cc-title">Efectividad por mes</span></div>
+      <div class="chart-body" style="min-height:160px"><canvas id="histEfectMes"></canvas></div>
     </div>
   </div>
 </section>
@@ -361,9 +545,8 @@ tbody td{padding:9px 14px}
     <span class="fbar-label">📅 Período:</span>
     <select class="sel" id="ciu-mes" onchange="renderCiudades()">
       <option value="">Todos</option>
-      <option value="01">Enero</option><option value="02">Febrero</option>
-      <option value="03">Marzo</option><option value="04">Abril</option>
-      <option value="05">Mayo</option><option value="06">Junio</option>
+      <option value="01">Ene</option><option value="02">Feb</option><option value="03">Mar</option>
+      <option value="04">Abr</option><option value="05">May</option><option value="06">Jun</option>
     </select>
     <div class="ms-wrap" id="ms-ciu">
       <button class="ms-btn" onclick="toggleMS('ms-ciu')">
@@ -380,12 +563,10 @@ tbody td{padding:9px 14px}
     <button class="fbar-clear" onclick="clearMS('ms-ciu');renderCiudades()">Limpiar</button>
     <span class="fbar-info" id="ciu-info">—</span>
   </div>
-
   <div class="chart-card">
     <div class="cc-hdr"><span class="cc-title">Efectividad por ciudad (%)</span></div>
     <div id="ciuChartWrap" class="chart-body"><canvas id="ciuChart"></canvas></div>
   </div>
-
   <div class="tbl-card">
     <div class="tbl-hdr">
       <div class="tbl-hdr-l"><h3>Detalle por ciudad</h3><span class="tbl-count" id="ciuCount">—</span></div>
@@ -401,9 +582,8 @@ tbody td{padding:9px 14px}
     <span class="fbar-label">📅 Período:</span>
     <select class="sel" id="cum-mes" onchange="renderCumplimiento()">
       <option value="">Todos</option>
-      <option value="01">Enero</option><option value="02">Febrero</option>
-      <option value="03">Marzo</option><option value="04">Abril</option>
-      <option value="05">Mayo</option><option value="06">Junio</option>
+      <option value="01">Ene</option><option value="02">Feb</option><option value="03">Mar</option>
+      <option value="04">Abr</option><option value="05">May</option><option value="06">Jun</option>
     </select>
     <div class="ms-wrap" id="ms-cum">
       <button class="ms-btn" onclick="toggleMS('ms-cum')">
@@ -419,11 +599,7 @@ tbody td{padding:9px 14px}
     <div id="ms-cum-chips" class="ms-chips"></div>
     <button class="fbar-clear" onclick="clearMS('ms-cum');renderCumplimiento()">Limpiar</button>
   </div>
-
-  <div class="cumpl-split" id="cumplSplit">
-    <div class="loading-wrap"><div class="spinner"></div></div>
-  </div>
-
+  <div class="cumpl-split" id="cumplSplit"><div class="loading-wrap"><div class="spinner"></div></div></div>
   <div class="charts-row col2">
     <div class="chart-card">
       <div class="cc-hdr"><span class="cc-title">Efectividad Total vs Operativa — tendencia diaria</span></div>
@@ -442,14 +618,12 @@ tbody td{padding:9px 14px}
     <span class="fbar-label">📅 Período:</span>
     <select class="sel" id="cli-mes" onchange="renderClientes()">
       <option value="">Todos</option>
-      <option value="01">Enero</option><option value="02">Febrero</option>
-      <option value="03">Marzo</option><option value="04">Abril</option>
-      <option value="05">Mayo</option><option value="06">Junio</option>
+      <option value="01">Ene</option><option value="02">Feb</option><option value="03">Mar</option>
+      <option value="04">Abr</option><option value="05">May</option><option value="06">Jun</option>
     </select>
     <input class="tbl-search" id="cliSearch" placeholder="Buscar CEDI..." oninput="filterCliTable()" style="margin-left:8px">
     <span class="fbar-info" id="cli-info">—</span>
   </div>
-
   <div class="tbl-card">
     <div class="tbl-hdr">
       <div class="tbl-hdr-l"><h3>Ranking por CEDI / Cliente</h3><span class="tbl-count" id="cliCount">—</span></div>
@@ -465,11 +639,11 @@ tbody td{padding:9px 14px}
     <div class="fbar-sep"></div>
     <select class="sel" id="pend-nivel" onchange="filterPendientes()">
       <option value="">Todos los niveles</option>
-      <option value="CRITICO">🔴 Crítico (+30 días)</option>
-      <option value="ALTO">🟠 Alto (15-29 días)</option>
-      <option value="MEDIO">🟡 Medio (7-14 días)</option>
-      <option value="BAJO">🟢 Bajo (2-6 días)</option>
-      <option value="RECIENTE">⚪ Reciente (hoy/ayer)</option>
+      <option value="CRITICO">🔴 Crítico (+30d)</option>
+      <option value="ALTO">🟠 Alto (15-29d)</option>
+      <option value="MEDIO">🟡 Medio (7-14d)</option>
+      <option value="BAJO">🟢 Bajo (2-6d)</option>
+      <option value="RECIENTE">⚪ Reciente</option>
     </select>
     <select class="sel" id="pend-status" onchange="filterPendientes()">
       <option value="">Todos los estados</option>
@@ -482,11 +656,7 @@ tbody td{padding:9px 14px}
     </select>
     <span class="fbar-info" id="pend-info">—</span>
   </div>
-
-  <!-- KPI resumen -->
   <div class="kpi-strip" id="pendKpis"><div class="loading-wrap"><div class="spinner"></div></div></div>
-
-  <!-- Gráfico resumen -->
   <div class="charts-row col2">
     <div class="chart-card">
       <div class="cc-hdr"><span class="cc-title">Pendientes por estado y antigüedad</span></div>
@@ -498,14 +668,9 @@ tbody td{padding:9px 14px}
       <div class="donut-legend" id="pendDonutLegend"></div>
     </div>
   </div>
-
-  <!-- Tabla detalle -->
   <div class="tbl-card">
     <div class="tbl-hdr">
-      <div class="tbl-hdr-l">
-        <h3>Detalle de guías pendientes</h3>
-        <span class="tbl-count" id="pendCount">—</span>
-      </div>
+      <div class="tbl-hdr-l"><h3>Detalle de guías pendientes</h3><span class="tbl-count" id="pendCount">—</span></div>
       <input class="tbl-search" id="pendSearch" placeholder="Buscar guía, ciudad..." oninput="filterPendientes()">
     </div>
     <div id="pendTbl"></div>
@@ -516,235 +681,121 @@ tbody td{padding:9px 14px}
 </div>
 
 <script>
+// ── Chart.js global dark defaults ──
+Chart.defaults.color = '#555555';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
+Chart.defaults.font.family = "'Inter', sans-serif";
+
 const API = 'https://n8n.srv1729021.hstgr.cloud/webhook';
 let charts = {};
-let rawKpis = [], rawCiudades = [], rawClientes = [];
-let rawPendientesResumen = [], rawPendientesDetalle = [];
-let rawCiudadesHoy = [];
+let rawKpis=[], rawCiudades=[], rawClientes=[];
+let rawPendientesResumen=[], rawPendientesDetalle=[];
+let rawCiudadesHoy=[];
 
-function renderPendientes(){
-  const resumen = rawPendientesResumen;
-  const total    = resumen.reduce((s,d)=>s+parseInt(d.guias||0),0);
-  const criticos = resumen.filter(d=>d.nivel_alerta==='CRITICO').reduce((s,d)=>s+parseInt(d.guias||0),0);
-  const altos    = resumen.filter(d=>d.nivel_alerta==='ALTO').reduce((s,d)=>s+parseInt(d.guias||0),0);
-  const medios   = resumen.filter(d=>d.nivel_alerta==='MEDIO').reduce((s,d)=>s+parseInt(d.guias||0),0);
-  const estados  = [...new Set(resumen.map(d=>d.status))].length;
-  const recientes= resumen.filter(d=>d.nivel_alerta==='RECIENTE').reduce((s,d)=>s+parseInt(d.guias||0),0);
-
-  const badge = document.getElementById('pendientesBadge');
-  if(criticos>0){ badge.style.display=''; badge.textContent=criticos; }
-
-  document.getElementById('pendKpis').innerHTML = `
-    ${kpiCard('TOTAL PENDIENTES',fmt(total),'Sin finalizar','down','#dc2626')}
-    ${kpiCard('CRÍTICOS +30 DÍAS',fmt(criticos),'Acción inmediata',criticos>0?'down':'neutral','#dc2626')}
-    ${kpiCard('ALTO 15-29 DÍAS',fmt(altos),'Seguimiento urgente',altos>0?'down':'neutral','#d97706')}
-    ${kpiCard('MEDIO 7-14 DÍAS',fmt(medios),'Monitorear','neutral','#F5C400')}
-    ${kpiCard('ESTADOS ACTIVOS',fmt(estados),'Tipos de pendiente','neutral','#1B4FD8')}
-    ${kpiCard('RECIENTES HOY',fmt(recientes),'Hoy/Ayer','neutral','#9ca3af')}
-  `;
-
-  const estados_list=[...new Set(resumen.map(d=>d.status))];
-  const niveles=['CRITICO','ALTO','MEDIO','BAJO','RECIENTE'];
-  const nColores={'CRITICO':'rgba(220,38,38,0.8)','ALTO':'rgba(217,119,6,0.8)','MEDIO':'rgba(245,196,0,0.8)','BAJO':'rgba(59,130,246,0.6)','RECIENTE':'rgba(156,163,175,0.6)'};
-  const datasets=niveles.map(n=>({
-    label:n, backgroundColor:nColores[n], borderRadius:3,
-    data:estados_list.map(e=>{const r=resumen.find(d=>d.status===e&&d.nivel_alerta===n);return r?parseInt(r.guias):0;})
-  })).filter(d=>d.data.some(v=>v>0));
-  destroyChart('pendChart');
-  charts['pendChart']=new Chart(document.getElementById('pendChart'),{type:'bar',
-    data:{labels:estados_list,datasets},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:8}}},
-      scales:{x:{stacked:true,ticks:{font:{size:10}}},y:{stacked:true,ticks:{font:{size:10}}}}}
-  });
-
-  const dNiveles=['CRITICO','ALTO','MEDIO','BAJO','RECIENTE'];
-  const dVals=dNiveles.map(n=>resumen.filter(d=>d.nivel_alerta===n).reduce((s,d)=>s+parseInt(d.guias||0),0));
-  const dClrs=['#dc2626','#d97706','#F5C400','#3b82f6','#9ca3af'];
-  destroyChart('pendDonut');
-  charts['pendDonut']=new Chart(document.getElementById('pendDonut'),{type:'doughnut',
-    data:{labels:dNiveles,datasets:[{data:dVals,backgroundColor:dClrs,borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}
-  });
-  document.getElementById('pendDonutLegend').innerHTML=dNiveles.map((l,i)=>
-    `<div class="dl-item"><div class="dl-dot" style="background:${dClrs[i]}"></div><span class="dl-label">${l}</span><span class="dl-val">${fmt(dVals[i])}</span></div>`
-  ).join('');
-  filterPendientes();
-}
-
-function filterPendientes(){
-  const nivel =(document.getElementById('pend-nivel')?.value)||'';
-  const status=(document.getElementById('pend-status')?.value)||'';
-  const q     =(document.getElementById('pendSearch')?.value||'').toLowerCase();
-  let data=rawPendientesDetalle;
-  if(nivel)  data=data.filter(d=>d.nivel_alerta===nivel);
-  if(status) data=data.filter(d=>d.status===status);
-  if(q)      data=data.filter(d=>(d.service_id||'').toLowerCase().includes(q)||(d.city||'').toLowerCase().includes(q)||(d.client||'').toLowerCase().includes(q));
-  document.getElementById('pend-info').textContent=`${fmt(data.length)} guías`;
-  document.getElementById('pendCount').textContent=fmt(data.length)+' guías';
-  const nb=v=>{
-    const cls={'CRITICO':'red','ALTO':'amber','MEDIO':'','BAJO':'blue','RECIENTE':''}[v]||'';
-    const ic={'CRITICO':'🔴','ALTO':'🟠','MEDIO':'🟡','BAJO':'🟢','RECIENTE':'⚪'}[v]||'';
-    return `<span class="badge badge-${cls}">${ic} ${v}</span>`;
-  };
-  document.getElementById('pendTbl').innerHTML=data.length?`<table>
-    <thead><tr><th>Guía</th><th>Cliente</th><th>Ciudad</th><th>Estado</th><th>Fecha</th><th>Días</th><th>Alerta</th></tr></thead>
-    <tbody>${data.map(d=>`<tr>
-      <td class="td-mono" style="font-size:11px">${d.service_id}</td>
-      <td class="td-name" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.client||'—'}</td>
-      <td class="td-muted">${d.city||'—'}</td>
-      <td><span class="badge badge-${d.status==='Fallido'?'red':d.status==='No asignado'?'amber':'blue'}">${d.status}</span></td>
-      <td class="td-mono td-muted">${(d.fecha_creacion||'').substr(0,10)}</td>
-      <td class="td-mono" style="font-weight:600;color:${parseInt(d.dias_pendiente)>=30?'var(--red)':parseInt(d.dias_pendiente)>=15?'var(--amber)':'var(--text-2)'}">${d.dias_pendiente}d</td>
-      <td>${nb(d.nivel_alerta)}</td>
-    </tr>`).join('')}</tbody></table>`
-    :'<div class="empty-msg">Sin guías con los filtros seleccionados</div>';
-}
-let allCiudades = [], allCedis = [];
-let msState = {}; // { id: Set of selected values }
-
-// ─── UTILS ───────────────────────────────────────────────
+// ── UTILS ──
 const fmt    = n => Number(n||0).toLocaleString('es-CO');
 const fmtCOP = n => '$' + Math.round((n||0)/1000).toLocaleString('es-CO') + 'K';
 const fmtPct = n => parseFloat(n||0).toFixed(1) + '%';
 const pctCls = v => { const p=parseFloat(v||0); return p>=85?'green':p>=60?'amber':'red'; };
+const pctColor = v => { const p=parseFloat(v||0); return p>=85?'var(--green)':p>=60?'var(--amber)':'var(--red)'; };
 const badgePct = v => `<span class="badge badge-${pctCls(v)}">${fmtPct(v)}</span>`;
 const mbar = (v,max) => {
-  const p = max>0?Math.min(100,v/max*100):0;
-  const c = p>=80?'high':p>=50?'mid':'low';
+  const p=max>0?Math.min(100,v/max*100):0;
+  const c=p>=80?'high':p>=50?'mid':'low';
   return `<div class="mbar"><div class="mbar-track"><div class="mbar-fill ${c}" style="width:${p.toFixed(1)}%"></div></div></div>`;
 };
-const getMes   = d => d ? d.substr(5,2) : '';
+const getMes   = d => d?d.substr(5,2):'';
 const getSemana = d => {
   if(!d) return '';
-  const dt = new Date(d);
-  const jan1 = new Date(dt.getFullYear(),0,1);
-  return 'S' + String(Math.ceil(((dt-jan1)/86400000+jan1.getDay()+1)/7)).padStart(2,'0');
+  const dt=new Date(d);
+  const jan1=new Date(dt.getFullYear(),0,1);
+  return 'S'+String(Math.ceil(((dt-jan1)/86400000+jan1.getDay()+1)/7)).padStart(2,'0');
 };
 const destroyChart = id => { if(charts[id]){charts[id].destroy();delete charts[id];} };
 
+// ── GAUGE ──
+function setGauge(pct){
+  const r=50, circ=2*Math.PI*r;
+  const offset=circ-(pct/100*circ);
+  const arc=document.getElementById('pvGaugeArc');
+  const pctEl=document.getElementById('pvGaugePct');
+  if(!arc||!pctEl) return;
+  arc.style.strokeDashoffset=offset;
+  arc.style.stroke=pct>=85?'var(--green)':pct>=60?'var(--amber)':'var(--red)';
+  pctEl.style.color=pct>=85?'var(--green)':pct>=60?'var(--amber)':'var(--red)';
+  pctEl.textContent=pct.toFixed(1)+'%';
+}
+
 function tick(){
-  document.getElementById('hTime').textContent = new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('hTime').textContent=new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 setInterval(tick,1000); tick();
 
-// ─── NAV ─────────────────────────────────────────────────
-let currentPage = 'planvuelo';
+// ── NAV ──
 function showPage(el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  const page = el.dataset.page;
-  currentPage = page;
+  const page=el.dataset.page;
   document.querySelectorAll('.page').forEach(s=>s.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
 }
 function refreshCurrent(){ loadAll(true); }
 
-// ─── MULTI-SELECT ─────────────────────────────────────────
-function initMS(id, options, onChange){
-  msState[id] = new Set();
-  const drop = document.getElementById(id+'-drop');
-  const optContainer = document.getElementById(id+'-options');
-  optContainer.innerHTML = options.map(o=>
-    `<div class="ms-option" data-val="${o}">
-      <input type="checkbox" value="${o}" onchange="toggleMSOption('${id}','${o}',this.checked,${onChange})"> ${o}
-    </div>`
-  ).join('');
-  document.getElementById(id+'-all').checked = true;
-  // Close on outside click
-  document.addEventListener('click', e => {
-    if(!document.getElementById(id) && !drop.closest('.ms-wrap').contains(e.target)){
-      drop.classList.remove('open');
-    }
-  });
+// ── MULTI-SELECT ──
+let msState={};
+function initMS(id,options,onChange){
+  msState[id]=new Set();
+  const optC=document.getElementById(id+'-options');
+  optC.innerHTML=options.map(o=>`<div class="ms-option" data-val="${o}"><input type="checkbox" value="${o}" onchange="toggleMSOption('${id}','${o}',this.checked,${onChange})"> ${o}</div>`).join('');
+  document.getElementById(id+'-all').checked=true;
 }
 function toggleMS(id){
-  const drop = document.getElementById(id+'-drop');
-  // close others
-  document.querySelectorAll('.ms-dropdown.open').forEach(d=>{ if(d!==drop) d.classList.remove('open'); });
+  const drop=document.getElementById(id+'-drop');
+  document.querySelectorAll('.ms-dropdown.open').forEach(d=>{if(d!==drop)d.classList.remove('open');});
   drop.classList.toggle('open');
   event.stopPropagation();
 }
-function toggleMSOption(id, val, checked, onChangeFn){
-  if(checked) msState[id].add(val);
-  else msState[id].delete(val);
-  updateMSUI(id);
-  if(onChangeFn) onChangeFn();
+function toggleMSOption(id,val,checked,fn){
+  if(checked)msState[id].add(val);else msState[id].delete(val);
+  updateMSUI(id);if(fn)fn();
 }
 function toggleAllMS(id){
-  const allCb = document.getElementById(id+'-all');
-  allCb.checked = !allCb.checked;
-  if(allCb.checked){
-    msState[id].clear();
-    document.querySelectorAll(`#${id}-options input`).forEach(cb=>cb.checked=false);
-  }
+  const a=document.getElementById(id+'-all');a.checked=!a.checked;
+  if(a.checked){msState[id].clear();document.querySelectorAll(`#${id}-options input`).forEach(c=>c.checked=false);}
   updateMSUI(id);
 }
 function clearMS(id){
-  msState[id] = new Set();
-  const allCb = document.getElementById(id+'-all');
-  if(allCb) allCb.checked = true;
-  document.querySelectorAll(`#${id}-options input`).forEach(cb=>cb.checked=false);
+  msState[id]=new Set();
+  const a=document.getElementById(id+'-all');if(a)a.checked=true;
+  document.querySelectorAll(`#${id}-options input`).forEach(c=>c.checked=false);
   updateMSUI(id);
 }
 function updateMSUI(id){
-  const sel = msState[id];
-  const btn = document.getElementById(id+'-label');
-  const chips = document.getElementById(id+'-chips');
-  if(sel.size===0){
-    btn.textContent = 'Todas las ciudades';
-    document.getElementById(id).querySelector('.ms-btn').classList.remove('has-selection');
-  } else {
-    btn.textContent = sel.size===1?[...sel][0]:`${sel.size} ciudades`;
-    document.getElementById(id).querySelector('.ms-btn').classList.add('has-selection');
-  }
-  if(chips) chips.innerHTML = [...sel].map(v=>
-    `<div class="chip">${v}<span class="chip-x" onclick="removeMSChip('${id}','${v}')">×</span></div>`
-  ).join('');
+  const sel=msState[id];
+  const btn=document.getElementById(id+'-label');
+  const chips=document.getElementById(id+'-chips');
+  if(sel.size===0){btn.textContent='Todas las ciudades';document.getElementById(id).querySelector('.ms-btn').classList.remove('has-selection');}
+  else{btn.textContent=sel.size===1?[...sel][0]:`${sel.size} ciudades`;document.getElementById(id).querySelector('.ms-btn').classList.add('has-selection');}
+  if(chips)chips.innerHTML=[...sel].map(v=>`<div class="chip">${v}<span class="chip-x" onclick="removeMSChip('${id}','${v}')">×</span></div>`).join('');
 }
 function removeMSChip(id,val){
   msState[id].delete(val);
-  const cb = document.querySelector(`#${id}-options input[value="${val}"]`);
-  if(cb) cb.checked=false;
+  const cb=document.querySelector(`#${id}-options input[value="${val}"]`);if(cb)cb.checked=false;
   updateMSUI(id);
-  // trigger re-render
-  if(id==='ms-pv') renderPV();
-  else if(id==='ms-hist') renderHistorico();
-  else if(id==='ms-ciu') renderCiudades();
-  else if(id==='ms-cum') renderCumplimiento();
+  if(id==='ms-pv')renderPV();else if(id==='ms-hist')renderHistorico();else if(id==='ms-ciu')renderCiudades();else if(id==='ms-cum')renderCumplimiento();
 }
-function filterMSOptions(id, q){
-  document.querySelectorAll(`#${id}-options .ms-option`).forEach(el=>{
-    el.style.display = el.dataset.val.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
-  });
+function filterMSOptions(id,q){
+  document.querySelectorAll(`#${id}-options .ms-option`).forEach(el=>{el.style.display=el.dataset.val.toLowerCase().includes(q.toLowerCase())?'':'none';});
 }
-function getSelectedCiudades(msId){
-  return msState[msId] && msState[msId].size>0 ? [...msState[msId]] : null;
-}
+function getSelectedCiudades(id){return msState[id]&&msState[id].size>0?[...msState[id]]:null;}
 
-// ─── FETCH ───────────────────────────────────────────────
+// ── FETCH ──
 async function fetchAPI(path){
-  const r = await fetch(`${API}/${path}?_=${Date.now()}`, {cache:'no-store'});
-  const j = await r.json();
-  return j.data||j||[];
+  const r=await fetch(`${API}/${path}?_=${Date.now()}`,{cache:'no-store'});
+  const j=await r.json();return j.data||j||[];
 }
 
-// ─── FILTER DATA ─────────────────────────────────────────
-function filterKpis(mes, semana, ciudades){
-  let data = rawKpis.filter(d=>d.fecha);
-  if(mes)    data = data.filter(d=>getMes(d.fecha)===mes);
-  if(semana) data = data.filter(d=>getSemana(d.fecha)===semana);
-  // ciudades filter: rawCiudades tiene por ciudad/fecha
-  return data;
-}
-function filterCiudadesData(mes, ciudades){
-  let data = rawCiudades;
-  if(mes)    data = data.filter(d=>getMes(d.fecha?.substr?d.fecha.substr(0,10):d.fecha)===mes);
-  if(ciudades) data = data.filter(d=>ciudades.includes(d.city));
-  return data;
-}
-
-// ─── KPI CARD ────────────────────────────────────────────
+// ── KPI CARD ──
 function kpiCard(label,val,sub,dir,accent){
   const arrow=dir==='up'?'▲':dir==='down'?'▼':'—';
   return `<div class="kpi-card" style="--accent:${accent}">
@@ -753,47 +804,24 @@ function kpiCard(label,val,sub,dir,accent){
     <div class="kpi-sub"><span class="kpi-delta ${dir}">${arrow}</span><span class="kpi-sublabel">${sub}</span></div>
   </div>`;
 }
-function buildKpis(data, ciuData, ciudades){
-  // If ciudades filter active, recalc from ciuData
-  let total,comp,canc,ing,efectTotal,efectOp,noAsig;
-  if(ciudades && ciuData){
-    let cd = ciuData;
-    total = cd.reduce((s,d)=>s+parseInt(d.total||0),0);
-    comp  = cd.reduce((s,d)=>s+parseInt(d.completados||0),0);
-    canc  = cd.reduce((s,d)=>s+parseInt(d.cancelados||0),0);
-    noAsig= 0; ing=0;
-    efectTotal = total>0?(comp/total*100):0;
-    efectOp    = (total-noAsig)>0?(comp/(total-noAsig)*100):0;
-  } else {
-    total = data.reduce((s,d)=>s+parseInt(d.total_servicios||0),0);
-    comp  = data.reduce((s,d)=>s+parseInt(d.completados||0),0);
-    canc  = data.reduce((s,d)=>s+parseInt(d.cancelados||0),0);
-    ing   = data.reduce((s,d)=>s+parseFloat(d.ingreso_generado||0),0);
-    noAsig= 0;
-    efectTotal = total>0?(comp/total*100):0;
-    efectOp    = (total-noAsig)>0?(comp/(total-noAsig)*100):0;
-  }
-  return {total,comp,canc,ing:ing||0,efectTotal,efectOp,noAsig};
-}
 
-// ─── PLAN DE VUELO ───────────────────────────────────────
+// ── TORRE DE CONTROL ──
 async function renderPV(){
-  const ciudades = getSelectedCiudades('ms-pv');
-  const kpis  = rawKpis.filter(d=>d.fecha);
-  const today = kpis.length>0?kpis[0]:null;
-  let ciuHoy  = rawCiudadesHoy; // solo datos de hoy
-  if(ciudades) ciuHoy = ciuHoy.filter(d=>ciudades.includes(d.city));
+  const ciudades=getSelectedCiudades('ms-pv');
+  const kpis=rawKpis.filter(d=>d.fecha);
+  const today=kpis.length>0?kpis[0]:null;
+  let ciuHoy=rawCiudadesHoy;
+  if(ciudades)ciuHoy=ciuHoy.filter(d=>ciudades.includes(d.city));
 
-  // aggregate por ciudad desde datos de hoy
-  const byCiu = {};
+  const byCiu={};
   ciuHoy.forEach(d=>{
     const c=d.city||'—';
-    if(!byCiu[c]) byCiu[c]={city:c,total:0,completados:0,cancelados:0};
+    if(!byCiu[c])byCiu[c]={city:c,total:0,completados:0,cancelados:0};
     byCiu[c].total+=parseInt(d.total||0);
     byCiu[c].completados+=parseInt(d.completados||0);
     byCiu[c].cancelados+=parseInt(d.cancelados||0);
   });
-  const ciuArr = Object.values(byCiu).map(c=>({...c,pct:c.total>0?(c.completados/c.total*100):0})).sort((a,b)=>b.total-a.total);
+  const ciuArr=Object.values(byCiu).map(c=>({...c,pct:c.total>0?(c.completados/c.total*100):0})).sort((a,b)=>b.total-a.total);
 
   let totalS=0,compS=0,cancS=0,ingS=0;
   if(ciudades){
@@ -806,50 +834,68 @@ async function renderPV(){
     cancS=parseInt(today.cancelados||0);
     ingS=parseFloat(today.ingreso_generado||0);
   }
-  const efectT = totalS>0?(compS/totalS*100):0;
-  const enProc = Math.max(0,totalS-compS-cancS);
+  const efectT=totalS>0?(compS/totalS*100):0;
+  const enProc=Math.max(0,totalS-compS-cancS);
 
-  const dateLabel = today?.fecha ? (([y,m,d])=>new Date(y,m-1,d).toLocaleDateString('es-CO',{weekday:'long',day:'2-digit',month:'long'}))(today.fecha.split('T')[0].split('-')) : '—';
-  document.getElementById('pvDate').textContent = dateLabel;
-  document.getElementById('pv-info').textContent = `${fmt(totalS)} servicios${ciudades?` · ${ciudades.length} ciudad(es) filtradas`:''}`;
+  const dateLabel=today?.fecha?(([y,m,d])=>new Date(y,m-1,d).toLocaleDateString('es-CO',{weekday:'long',day:'2-digit',month:'long'}))(today.fecha.split('T')[0].split('-')):'—';
+  document.getElementById('pvDate').textContent=dateLabel;
+  document.getElementById('pv-info').textContent=`${fmt(totalS)} servicios${ciudades?` · ${ciudades.length} ciudades`:''}`;
 
-  document.getElementById('pvKpis').innerHTML = `
-    ${kpiCard('TOTAL SERVICIOS',fmt(totalS),'En curso hoy','neutral','#1B4FD8')}
-    ${kpiCard('FINALIZADOS',fmt(compS),fmtPct(efectT)+' efectividad','up','#16a34a')}
-    ${kpiCard('CANCELADOS',fmt(cancS),(totalS>0?(cancS/totalS*100).toFixed(1):'0')+'% tasa','down','#dc2626')}
-    ${kpiCard('EN PROCESO',fmt(enProc),'Aceptado/Asignado/Llegada','neutral','#1B4FD8')}
-    ${kpiCard('CIUDADES ACTIVAS',fmt(ciuArr.length),'con servicios hoy','neutral','#F5C400')}
-    ${kpiCard('INGRESO',fmtCOP(ingS),'Flete generado','up','#16a34a')}
+  document.getElementById('pvKpis').innerHTML=`
+    ${kpiCard('TOTAL SERVICIOS',fmt(totalS),'En curso hoy','neutral','var(--gold)')}
+    ${kpiCard('FINALIZADOS',fmt(compS),fmtPct(efectT)+' efectividad','up','var(--green)')}
+    ${kpiCard('CANCELADOS',fmt(cancS),(totalS>0?(cancS/totalS*100).toFixed(1):'0')+'% tasa','down','var(--red)')}
+    ${kpiCard('EN PROCESO',fmt(enProc),'Aceptado/Asignado/Llegada','neutral','var(--blue)')}
+    ${kpiCard('CIUDADES ACTIVAS',fmt(ciuArr.length),'Con operación hoy','neutral','var(--gold)')}
+    ${kpiCard('INGRESO',fmtCOP(ingS),'Flete generado','up','var(--green)')}
+  `;
+
+  // Gauge
+  setGauge(efectT);
+  document.getElementById('pvEfectBadge').textContent=fmtPct(efectT);
+  document.getElementById('pvStatRows').innerHTML=`
+    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:10.5px;color:var(--text-3)">Finalizados</span>
+      <span style="font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--green)">${fmt(compS)}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:10.5px;color:var(--text-3)">En proceso</span>
+      <span style="font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--blue)">${fmt(enProc)}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:10.5px;color:var(--text-3)">Cancelados</span>
+      <span style="font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--red)">${fmt(cancS)}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:5px 0">
+      <span style="font-size:10.5px;color:var(--text-3)">Ingreso</span>
+      <span style="font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--gold)">${fmtCOP(ingS)}</span>
+    </div>
   `;
 
   // Donut
-  const colors=['#16a34a','#dc2626','#1B4FD8','#9ca3af'];
+  const colors=['#22C55E','#EF4444','#3B82F6','#555555'];
   const dlabels=['Finalizados','Cancelados','En proceso','Otros'];
   const dvals=[compS,cancS,enProc,0];
   destroyChart('pvDonut');
   charts['pvDonut']=new Chart(document.getElementById('pvDonut'),{
     type:'doughnut',
-    data:{labels:dlabels,datasets:[{data:dvals,backgroundColor:colors,borderWidth:0,hoverOffset:4}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${fmt(ctx.raw)}`}}}}
+    data:{labels:dlabels,datasets:[{data:dvals,backgroundColor:colors,borderWidth:0,hoverOffset:4,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'72%',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${fmt(ctx.raw)}`}}}}
   });
   document.getElementById('pvDonutLegend').innerHTML=dlabels.map((l,i)=>
     `<div class="dl-item"><div class="dl-dot" style="background:${colors[i]}"></div><span class="dl-label">${l}</span><span class="dl-val">${fmt(dvals[i])}</span></div>`
   ).join('');
 
-  // Ciudad bar chart
-  const topCiu=ciuArr.slice(0,15);
-  destroyChart('pvCiudadChart');
-  const pvCiWrap=document.getElementById('pvCiudadChart').parentElement;
-  pvCiWrap.style.minHeight=Math.max(160,topCiu.length*30+60)+'px';
-  charts['pvCiudadChart']=new Chart(document.getElementById('pvCiudadChart'),{
-    type:'bar',data:{
-      labels:topCiu.map(d=>d.city),
-      datasets:[{label:'Cumplimiento%',data:topCiu.map(d=>parseFloat(d.pct.toFixed(1))),
-        backgroundColor:topCiu.map(d=>d.pct>=85?'rgba(22,163,74,0.75)':d.pct>=60?'rgba(217,119,6,0.75)':'rgba(220,38,38,0.75)'),borderRadius:4}]
-    },
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{min:0,max:100,ticks:{font:{size:9},callback:v=>v+'%'}},y:{ticks:{font:{size:10}}}}}
-  });
+  // City scorecards
+  document.getElementById('pvCityGrid').innerHTML=ciuArr.map(d=>`
+    <div class="city-sc">
+      <div class="city-sc-name">${d.city}</div>
+      <div class="city-sc-pct" style="color:${pctColor(d.pct)}">${d.pct.toFixed(1)}%</div>
+      <div class="city-sc-sub">${fmt(d.total)} servicios</div>
+      <div class="city-sc-bar"><div class="city-sc-fill" style="width:${d.pct.toFixed(1)}%;background:${pctColor(d.pct)}"></div></div>
+    </div>
+  `).join('');
   document.getElementById('pvCiudadBadge').textContent=`${ciuArr.length} ciudades`;
   document.getElementById('pvCiudadCount').textContent=ciuArr.length+' ciudades';
 
@@ -857,16 +903,15 @@ async function renderPV(){
   const criticas=ciuArr.filter(d=>d.pct<30&&d.total>=3);
   const warnings=ciuArr.filter(d=>d.pct>=30&&d.pct<60&&d.total>=3);
   const badge=document.getElementById('alertBadge');
-  badge.style.display=criticas.length?'':'none';
-  badge.textContent=criticas.length;
+  badge.style.display=criticas.length?'':'none';badge.textContent=criticas.length;
   document.getElementById('pvAlertCount').textContent=criticas.length?`${criticas.length} críticas · ${warnings.length} advertencias`:'Sin alertas';
   document.getElementById('pvAlerts').innerHTML=[
-    ...criticas.map(d=>`<div class="alert-item critical"><div class="alert-dot critical"></div><span style="font-weight:600">${d.city}</span><span style="color:var(--text-3)"> ${fmtPct(d.pct)} · ${fmt(d.total)} servicios</span></div>`),
-    ...warnings.map(d=>`<div class="alert-item warning"><div class="alert-dot warning"></div><span style="font-weight:600">${d.city}</span><span style="color:var(--text-3)"> ${fmtPct(d.pct)}</span></div>`),
-    ...(ciuArr.filter(d=>d.pct>=85&&d.total>=3).slice(0,4).map(d=>`<div class="alert-item good"><div class="alert-dot good"></div><span style="font-weight:600">${d.city}</span><span style="color:var(--text-3)"> ${fmtPct(d.pct)} ✓</span></div>`))
+    ...criticas.map(d=>`<div class="alert-item critical"><div class="alert-dot critical"></div><span style="font-weight:600;color:var(--text-1)">${d.city}</span><span style="color:var(--text-3)"> ${fmtPct(d.pct)} · ${fmt(d.total)} servicios</span></div>`),
+    ...warnings.map(d=>`<div class="alert-item warning"><div class="alert-dot warning"></div><span style="font-weight:600;color:var(--text-1)">${d.city}</span><span style="color:var(--text-3)"> ${fmtPct(d.pct)}</span></div>`),
+    ...ciuArr.filter(d=>d.pct>=85&&d.total>=3).slice(0,5).map(d=>`<div class="alert-item good"><div class="alert-dot good"></div><span style="font-weight:600;color:var(--text-1)">${d.city}</span><span style="color:var(--text-3)"> ${fmtPct(d.pct)} ✓</span></div>`)
   ].join('')||'<div class="alert-item good"><div class="alert-dot good"></div><span>Todas las ciudades operando bien</span></div>';
 
-  // Table
+  // Tabla
   const maxT=Math.max(...ciuArr.map(d=>d.total),1);
   document.getElementById('pvCiudadTbl').innerHTML=`<table>
     <thead><tr><th>Ciudad</th><th>Total</th><th>Finalizados</th><th>Cancelados</th><th>Efectividad</th><th>Volumen</th></tr></thead>
@@ -880,19 +925,17 @@ async function renderPV(){
     </tr>`).join('')}</tbody></table>`;
 }
 
-// ─── HISTORICO ───────────────────────────────────────────
+// ── HISTÓRICO ──
 function renderHistorico(){
-  const mes     = document.getElementById('hist-mes').value;
-  const semana  = document.getElementById('hist-semana').value;
-  const ciudades= getSelectedCiudades('ms-hist');
-
-  let data = rawKpis.filter(d=>d.fecha);
-  if(mes)    data=data.filter(d=>getMes(d.fecha)===mes);
-  if(semana) data=data.filter(d=>getSemana(d.fecha)===semana);
-
-  let ciuData = rawCiudades;
-  if(mes)     ciuData=ciuData.filter(d=>getMes(d.fecha?.substr?d.fecha.substr(0,10):d.fecha)===mes);
-  if(ciudades) ciuData=ciuData.filter(d=>ciudades.includes(d.city));
+  const mes=document.getElementById('hist-mes').value;
+  const semana=document.getElementById('hist-semana').value;
+  const ciudades=getSelectedCiudades('ms-hist');
+  let data=rawKpis.filter(d=>d.fecha);
+  if(mes)data=data.filter(d=>getMes(d.fecha)===mes);
+  if(semana)data=data.filter(d=>getSemana(d.fecha)===semana);
+  let ciuData=rawCiudades;
+  if(mes)ciuData=ciuData.filter(d=>getMes(d.fecha?.substr?d.fecha.substr(0,10):d.fecha)===mes);
+  if(ciudades)ciuData=ciuData.filter(d=>ciudades.includes(d.city));
 
   const total=data.reduce((s,d)=>s+parseInt(d.total_servicios||0),0);
   const comp=data.reduce((s,d)=>s+parseInt(d.completados||0),0);
@@ -906,40 +949,38 @@ function renderHistorico(){
   document.getElementById('hist-info').textContent=`${fmt(total)} servicios · ${data.length} días`;
 
   document.getElementById('histKpis').innerHTML=`
-    ${kpiCard('TOTAL',fmt(total),`${data.length} días activos`,'neutral','#1B4FD8')}
-    ${kpiCard('FINALIZADOS',fmt(comp),fmtPct(efect)+' efectividad','up','#16a34a')}
-    ${kpiCard('CANCELADOS',fmt(canc),(total>0?(canc/total*100).toFixed(1):'0')+'% tasa','down','#dc2626')}
-    ${kpiCard('INGRESO',fmtCOP(ing),'Flete total','up','#F5C400')}
-    ${kpiCard('EFECTIVIDAD TOTAL',fmtPct(efect),'Fin/Total',efect>=85?'up':efect>=60?'neutral':'down',efect>=85?'#16a34a':efect>=60?'#d97706':'#dc2626')}
-    ${kpiCard('CIUDADES',fmt(new Set(ciuData.map(d=>d.city)).size),'Con actividad','neutral','#9ca3af')}
+    ${kpiCard('TOTAL',fmt(total),`${data.length} días activos`,'neutral','var(--gold)')}
+    ${kpiCard('FINALIZADOS',fmt(comp),fmtPct(efect)+' efectividad','up','var(--green)')}
+    ${kpiCard('CANCELADOS',fmt(canc),(total>0?(canc/total*100).toFixed(1):'0')+'% tasa','down','var(--red)')}
+    ${kpiCard('INGRESO',fmtCOP(ing),'Flete total','up','var(--gold)')}
+    ${kpiCard('EFECTIVIDAD',fmtPct(efect),'Fin/Total',efect>=85?'up':efect>=60?'neutral':'down',efect>=85?'var(--green)':efect>=60?'var(--amber)':'var(--red)')}
+    ${kpiCard('CIUDADES',fmt(new Set(ciuData.map(d=>d.city)).size),'Con actividad','neutral','var(--text-3)')}
   `;
 
-  // ── Gráfico por MES ──
   const MESES=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const byMes={};
   rawKpis.filter(d=>d.fecha).forEach(d=>{
     const m=getMes(d.fecha);
-    if(!byMes[m]) byMes[m]={total:0,comp:0,canc:0,ing:0};
+    if(!byMes[m])byMes[m]={total:0,comp:0,canc:0,ing:0};
     byMes[m].total+=parseInt(d.total_servicios||0);
-    byMes[m].comp +=parseInt(d.completados||0);
-    byMes[m].canc +=parseInt(d.cancelados||0);
-    byMes[m].ing  +=parseFloat(d.ingreso_generado||0);
+    byMes[m].comp+=parseInt(d.completados||0);
+    byMes[m].canc+=parseInt(d.cancelados||0);
+    byMes[m].ing+=parseFloat(d.ingreso_generado||0);
   });
   const mesKeys=Object.keys(byMes).sort();
-  const mesLabels=mesKeys.map(m=>MESES[parseInt(m)]+' 2026');
+  const mesLabels=mesKeys.map(m=>MESES[parseInt(m)]);
+
   destroyChart('histMes');
   charts['histMes']=new Chart(document.getElementById('histMes'),{type:'bar',
     data:{labels:mesLabels,datasets:[
-      {label:'Finalizados', data:mesKeys.map(m=>byMes[m].comp), backgroundColor:'rgba(22,163,74,0.8)',  borderRadius:5},
-      {label:'Cancelados',  data:mesKeys.map(m=>byMes[m].canc), backgroundColor:'rgba(220,38,38,0.7)',  borderRadius:5},
-      {label:'En proceso',  data:mesKeys.map(m=>Math.max(0,byMes[m].total-byMes[m].comp-byMes[m].canc)), backgroundColor:'rgba(59,130,246,0.5)', borderRadius:5}
+      {label:'Finalizados',data:mesKeys.map(m=>byMes[m].comp),backgroundColor:'rgba(34,197,94,0.75)',borderRadius:5,borderSkipped:false},
+      {label:'Cancelados', data:mesKeys.map(m=>byMes[m].canc),backgroundColor:'rgba(239,68,68,0.65)', borderRadius:5,borderSkipped:false},
+      {label:'En proceso', data:mesKeys.map(m=>Math.max(0,byMes[m].total-byMes[m].comp-byMes[m].canc)),backgroundColor:'rgba(59,130,246,0.45)',borderRadius:5,borderSkipped:false}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:10}},
-        tooltip:{callbacks:{afterBody:items=>{const m=mesKeys[items[0].dataIndex];return [`Total: ${fmt(byMes[m].total)}`,`Ingreso: ${fmtCOP(byMes[m].ing)}`];}}}
-      },
-      scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:10},callback:v=>fmt(v)}}}
-    }
+      plugins:{legend:{position:'bottom',labels:{color:'#555',font:{size:10},boxWidth:10,padding:10}},
+        tooltip:{callbacks:{afterBody:items=>{const m=mesKeys[items[0].dataIndex];return[`Total: ${fmt(byMes[m].total)}`,`Ingreso: ${fmtCOP(byMes[m].ing)}`];}}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:11}}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#555',font:{size:10},callback:v=>fmt(v)}}}}
   });
   document.getElementById('histMesBadge').textContent=`${mesKeys.length} meses`;
 
@@ -949,70 +990,82 @@ function renderHistorico(){
   destroyChart('histVol');
   charts['histVol']=new Chart(document.getElementById('histVol'),{type:'bar',
     data:{labels,datasets:[
-      {label:'Finalizados',data:sorted.map(d=>parseInt(d.completados||0)),backgroundColor:'rgba(22,163,74,0.75)',borderRadius:3,stack:'s'},
-      {label:'Cancelados', data:sorted.map(d=>parseInt(d.cancelados||0)), backgroundColor:'rgba(220,38,38,0.6)', borderRadius:3,stack:'s'},
-      {label:'En proceso', data:sorted.map(d=>Math.max(0,parseInt(d.total_servicios||0)-parseInt(d.completados||0)-parseInt(d.cancelados||0))),backgroundColor:'rgba(59,130,246,0.5)',borderRadius:3,stack:'s'}
+      {label:'Finalizados',data:sorted.map(d=>parseInt(d.completados||0)),backgroundColor:'rgba(34,197,94,0.7)',borderRadius:2,stack:'s'},
+      {label:'Cancelados', data:sorted.map(d=>parseInt(d.cancelados||0)), backgroundColor:'rgba(239,68,68,0.6)',borderRadius:2,stack:'s'},
+      {label:'En proceso', data:sorted.map(d=>Math.max(0,parseInt(d.total_servicios||0)-parseInt(d.completados||0)-parseInt(d.cancelados||0))),backgroundColor:'rgba(59,130,246,0.45)',borderRadius:2,stack:'s'}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:10}}},
-      scales:{x:{stacked:true,ticks:{font:{size:9}}},y:{stacked:true,ticks:{font:{size:10}}}}}
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{color:'#555',font:{size:10},boxWidth:10,padding:10}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#555',font:{size:8},maxTicksLimit:20}},y:{stacked:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#555',font:{size:10}}}}}
   });
   document.getElementById('histVolBadge').textContent=fmt(total)+' servicios';
 
   destroyChart('histCumpl');
   charts['histCumpl']=new Chart(document.getElementById('histCumpl'),{type:'line',
     data:{labels,datasets:[{label:'Cumplimiento%',data:sorted.map(d=>parseFloat(d.cumplimiento_pct||0)),
-      borderColor:'#1B4FD8',backgroundColor:'rgba(27,79,216,0.06)',borderWidth:2,pointRadius:2,fill:true,tension:0.35,
-      pointBackgroundColor:sorted.map(d=>parseFloat(d.cumplimiento_pct||0)<60?'#dc2626':parseFloat(d.cumplimiento_pct||0)<85?'#d97706':'#16a34a'),
-      pointRadius:sorted.map(d=>parseFloat(d.cumplimiento_pct||0)<60?4:2)
-    }]},
+      borderColor:'#F5C400',backgroundColor:'rgba(245,196,0,0.05)',borderWidth:2,
+      pointRadius:sorted.map(d=>parseFloat(d.cumplimiento_pct||0)<60?4:1.5),
+      pointBackgroundColor:sorted.map(d=>parseFloat(d.cumplimiento_pct||0)<60?'#EF4444':parseFloat(d.cumplimiento_pct||0)<85?'#F59E0B':'#22C55E'),
+      fill:true,tension:0.35}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{font:{size:9}}},y:{min:0,max:100,ticks:{font:{size:10},callback:v=>v+'%'}}}}
+      scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:8},maxTicksLimit:20}},
+              y:{min:0,max:100,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#555',font:{size:10},callback:v=>v+'%'}}}}
+  });
+
+  destroyChart('histIng');
+  charts['histIng']=new Chart(document.getElementById('histIng'),{type:'line',
+    data:{labels,datasets:[{label:'Ingreso COP',data:sorted.map(d=>parseFloat(d.ingreso_generado||0)),
+      borderColor:'#F5C400',backgroundColor:'rgba(245,196,0,0.06)',borderWidth:2,pointRadius:1.5,tension:0.35,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:8},maxTicksLimit:20}},
+              y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#555',font:{size:10},callback:v=>fmtCOP(v)}}}}
   });
 
   const dvals2=[comp,canc,Math.max(0,total-comp-canc)];
-  const clrs=['#16a34a','#dc2626','#1B4FD8'];
+  const clrs=['#22C55E','#EF4444','#3B82F6'];
   const dlbls=['Finalizados','Cancelados','En proceso'];
   destroyChart('histDonut');
   charts['histDonut']=new Chart(document.getElementById('histDonut'),{type:'doughnut',
-    data:{labels:dlbls,datasets:[{data:dvals2,backgroundColor:clrs,borderWidth:0}]},
+    data:{labels:dlbls,datasets:[{data:dvals2,backgroundColor:clrs,borderWidth:0,borderRadius:4}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false}}}
   });
   document.getElementById('histDonutLegend').innerHTML=dlbls.map((l,i)=>
     `<div class="dl-item"><div class="dl-dot" style="background:${clrs[i]}"></div><span class="dl-label">${l}</span><span class="dl-val">${fmt(dvals2[i])}</span></div>`
   ).join('');
 
-  destroyChart('histIng');
-  charts['histIng']=new Chart(document.getElementById('histIng'),{type:'line',
-    data:{labels,datasets:[{label:'Ingreso COP',data:sorted.map(d=>parseFloat(d.ingreso_generado||0)),
-      borderColor:'#F5C400',backgroundColor:'rgba(245,196,0,0.08)',borderWidth:2,pointRadius:2,tension:0.35,fill:true}]},
+  // Efectividad por mes
+  const efMes=mesKeys.map(m=>byMes[m].total>0?(byMes[m].comp/byMes[m].total*100):0);
+  destroyChart('histEfectMes');
+  charts['histEfectMes']=new Chart(document.getElementById('histEfectMes'),{type:'bar',
+    data:{labels:mesLabels,datasets:[{
+      label:'Efectividad%',data:efMes,
+      backgroundColor:efMes.map(v=>v>=85?'rgba(34,197,94,0.75)':v>=60?'rgba(245,158,11,0.75)':'rgba(239,68,68,0.75)'),
+      borderRadius:6,borderSkipped:false
+    }]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:10},callback:v=>fmtCOP(v)}}}}
+      scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:11}}},
+              y:{min:0,max:100,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#555',font:{size:10},callback:v=>v+'%'}}}}
   });
 }
 
-// ─── CIUDADES ────────────────────────────────────────────
+// ── CIUDADES ──
 let ciuAll=[];
 function renderCiudades(){
   const mes=document.getElementById('ciu-mes').value;
   const ciudades=getSelectedCiudades('ms-ciu');
   let data=rawCiudades;
-  if(mes) data=data.filter(d=>getMes(d.fecha?.substr?d.fecha.substr(0,10):d.fecha)===mes);
-  // aggregate
+  if(mes)data=data.filter(d=>getMes(d.fecha?.substr?d.fecha.substr(0,10):d.fecha)===mes);
   const byCiu={};
   data.forEach(d=>{
     const c=d.city||'—';
-    if(!byCiu[c]) byCiu[c]={city:c,total:0,completados:0,cancelados:0};
-    byCiu[c].total+=parseInt(d.total||0);
-    byCiu[c].completados+=parseInt(d.completados||0);
-    byCiu[c].cancelados+=parseInt(d.cancelados||0);
+    if(!byCiu[c])byCiu[c]={city:c,total:0,completados:0,cancelados:0};
+    byCiu[c].total+=parseInt(d.total||0);byCiu[c].completados+=parseInt(d.completados||0);byCiu[c].cancelados+=parseInt(d.cancelados||0);
   });
   ciuAll=Object.values(byCiu).map(c=>({...c,pct:c.total>0?(c.completados/c.total*100):0})).sort((a,b)=>b.total-a.total);
-  let filtered=ciuAll;
-  if(ciudades) filtered=ciuAll.filter(d=>ciudades.includes(d.city));
+  let filtered=ciuAll;if(ciudades)filtered=ciuAll.filter(d=>ciudades.includes(d.city));
   document.getElementById('ciu-info').textContent=fmt(filtered.reduce((s,d)=>s+d.total,0))+' servicios';
   document.getElementById('ciuCount').textContent=filtered.length+' ciudades';
-  renderCiuChart(filtered);
-  renderCiuTable(filtered);
+  renderCiuChart(filtered);renderCiuTable(filtered);
 }
 function renderCiuChart(data){
   const top=data.slice(0,20);
@@ -1021,127 +1074,97 @@ function renderCiuChart(data){
   destroyChart('ciuChart');
   charts['ciuChart']=new Chart(document.getElementById('ciuChart'),{type:'bar',
     data:{labels:top.map(d=>d.city),datasets:[{label:'Efectividad%',data:top.map(d=>parseFloat(d.pct.toFixed(1))),
-      backgroundColor:top.map(d=>d.pct>=85?'rgba(22,163,74,0.75)':d.pct>=60?'rgba(217,119,6,0.75)':'rgba(220,38,38,0.75)'),borderRadius:4}]},
+      backgroundColor:top.map(d=>d.pct>=85?'rgba(34,197,94,0.75)':d.pct>=60?'rgba(245,158,11,0.75)':'rgba(239,68,68,0.75)'),borderRadius:4}]},
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{min:0,max:100,ticks:{font:{size:9},callback:v=>v+'%'}},y:{ticks:{font:{size:10}}}}}
+      scales:{x:{min:0,max:100,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#555',font:{size:9},callback:v=>v+'%'}},
+              y:{grid:{display:false},ticks:{color:'#A0A0A0',font:{size:10}}}}}
   });
 }
 function renderCiuTable(data){
   const maxT=Math.max(...data.map(d=>d.total),1);
   document.getElementById('ciuTbl').innerHTML=`<table>
-    <thead><tr><th>Ciudad</th><th>Total</th><th>Finalizados</th><th>Cancelados</th><th>Efectividad Total</th><th>Ef. Operativa*</th><th>Volumen</th></tr></thead>
-    <tbody>${data.map(d=>{
-      const efOp=(d.total)>0?(d.completados/d.total*100):0;
-      return `<tr>
-        <td class="td-name">${d.city}</td>
-        <td class="td-mono">${fmt(d.total)}</td>
-        <td class="td-mono" style="color:var(--green)">${fmt(d.completados)}</td>
-        <td class="td-mono" style="color:var(--red)">${fmt(d.cancelados)}</td>
-        <td>${badgePct(d.pct)}</td>
-        <td>${badgePct(efOp)}</td>
-        <td>${mbar(d.total,maxT)}</td>
-      </tr>`;
-    }).join('')}</tbody>
-  </table><div style="padding:8px 14px;font-size:10px;color:var(--text-3)">* Ef. Operativa = Finalizados / (Total − No asignados) — dato disponible con carga CSV enriquecida</div>`;
+    <thead><tr><th>Ciudad</th><th>Total</th><th>Finalizados</th><th>Cancelados</th><th>Efectividad</th><th>Volumen</th></tr></thead>
+    <tbody>${data.map(d=>`<tr>
+      <td class="td-name">${d.city}</td>
+      <td class="td-mono">${fmt(d.total)}</td>
+      <td class="td-mono" style="color:var(--green)">${fmt(d.completados)}</td>
+      <td class="td-mono" style="color:var(--red)">${fmt(d.cancelados)}</td>
+      <td>${badgePct(d.pct)}</td>
+      <td>${mbar(d.total,maxT)}</td>
+    </tr>`).join('')}</tbody></table>`;
 }
 function filterCiuTable(){
-  const q=document.getElementById('ciuSearch').value.toLowerCase();
-  renderCiuTable(ciuAll.filter(d=>d.city.toLowerCase().includes(q)));
+  renderCiuTable(ciuAll.filter(d=>d.city.toLowerCase().includes(document.getElementById('ciuSearch').value.toLowerCase())));
 }
 
-// ─── CUMPLIMIENTO ────────────────────────────────────────
+// ── CUMPLIMIENTO ──
 function renderCumplimiento(){
   const mes=document.getElementById('cum-mes').value;
   const ciudades=getSelectedCiudades('ms-cum');
-  let data=rawKpis.filter(d=>d.fecha);
-  if(mes) data=data.filter(d=>getMes(d.fecha)===mes);
+  let data=rawKpis.filter(d=>d.fecha);if(mes)data=data.filter(d=>getMes(d.fecha)===mes);
   let ciuData=rawCiudades;
-  if(mes) ciuData=ciuData.filter(d=>getMes(d.fecha?.substr?d.fecha.substr(0,10):d.fecha)===mes);
-  if(ciudades) ciuData=ciuData.filter(d=>ciudades.includes(d.city));
+  if(mes)ciuData=ciuData.filter(d=>getMes(d.fecha?.substr?d.fecha.substr(0,10):d.fecha)===mes);
+  if(ciudades)ciuData=ciuData.filter(d=>ciudades.includes(d.city));
 
   const total=data.reduce((s,d)=>s+parseInt(d.total_servicios||0),0);
   const comp=data.reduce((s,d)=>s+parseInt(d.completados||0),0);
   const canc=data.reduce((s,d)=>s+parseInt(d.cancelados||0),0);
   const efectTotal=total>0?(comp/total*100):0;
-  // Operativa: excluye cancelados del denominador
   const efectOp=(total-canc)>0?(comp/(total-canc)*100):0;
 
-  const cls=v=>v>=85?'var(--green)':v>=60?'var(--amber)':'var(--red)';
   document.getElementById('cumplSplit').innerHTML=`
     <div class="cumpl-card">
-      <div class="cumpl-hdr">
-        <span class="cumpl-title">📊 Efectividad Total</span>
-        <span class="cumpl-formula">Finalizados ÷ Total</span>
-      </div>
-      <div class="cumpl-big" style="color:${cls(efectTotal)}">${fmtPct(efectTotal)}</div>
+      <div class="cumpl-hdr"><span class="cumpl-title">📊 Efectividad Total</span><span class="cumpl-formula">Finalizados ÷ Total</span></div>
+      <div class="cumpl-big" style="color:${pctColor(efectTotal)}">${fmtPct(efectTotal)}</div>
       <div class="cumpl-detail">${fmt(comp)} finalizados de ${fmt(total)} servicios totales</div>
     </div>
     <div class="cumpl-card">
-      <div class="cumpl-hdr">
-        <span class="cumpl-title">⚙️ Efectividad Operativa</span>
-        <span class="cumpl-formula">Finalizados ÷ (Total − Cancelados)</span>
-      </div>
-      <div class="cumpl-big" style="color:${cls(efectOp)}">${fmtPct(efectOp)}</div>
+      <div class="cumpl-hdr"><span class="cumpl-title">⚙️ Efectividad Operativa</span><span class="cumpl-formula">Finalizados ÷ (Total − Cancelados)</span></div>
+      <div class="cumpl-big" style="color:${pctColor(efectOp)}">${fmtPct(efectOp)}</div>
       <div class="cumpl-detail">${fmt(comp)} finalizados de ${fmt(total-canc)} servicios operativos</div>
     </div>
   `;
 
   const sorted=[...data].sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
   const labels=sorted.map(d=>new Date(d.fecha).toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit'}));
-  const valsT=sorted.map(d=>parseFloat(d.cumplimiento_pct||0));
-  const valsO=sorted.map(d=>{
-    const t=parseInt(d.total_servicios||0),c=parseInt(d.completados||0),k=parseInt(d.cancelados||0);
-    return (t-k)>0?parseFloat((c/(t-k)*100).toFixed(1)):0;
-  });
-
   destroyChart('cumplTrend');
   charts['cumplTrend']=new Chart(document.getElementById('cumplTrend'),{type:'line',
     data:{labels,datasets:[
-      {label:'Efectividad Total',data:valsT,borderColor:'#1B4FD8',borderWidth:2,pointRadius:2,tension:0.3,fill:false},
-      {label:'Efectividad Operativa',data:valsO,borderColor:'#16a34a',borderWidth:2,pointRadius:2,tension:0.3,fill:false,borderDash:[4,3]}
+      {label:'Efectividad Total',   data:sorted.map(d=>parseFloat(d.cumplimiento_pct||0)),borderColor:'#F5C400',borderWidth:2,pointRadius:1.5,tension:0.3,fill:false},
+      {label:'Efectividad Operativa',data:sorted.map(d=>{const t=parseInt(d.total_servicios||0),c=parseInt(d.completados||0),k=parseInt(d.cancelados||0);return(t-k)>0?parseFloat((c/(t-k)*100).toFixed(1)):0;}),borderColor:'#22C55E',borderWidth:2,pointRadius:1.5,tension:0.3,fill:false,borderDash:[4,3]}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:10}}},
-      scales:{x:{ticks:{font:{size:9}}},y:{min:0,max:100,ticks:{font:{size:10},callback:v=>v+'%'}}}}
+      plugins:{legend:{position:'bottom',labels:{color:'#555',font:{size:10},boxWidth:10,padding:10}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#555',font:{size:8},maxTicksLimit:20}},
+              y:{min:0,max:100,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#555',font:{size:10},callback:v=>v+'%'}}}}
   });
 
-  // Ciudad comparativo
   const byCiu={};
   ciuData.forEach(d=>{
     const c=d.city||'—';
-    if(!byCiu[c]) byCiu[c]={city:c,total:0,comp:0,canc:0};
-    byCiu[c].total+=parseInt(d.total||0);
-    byCiu[c].comp+=parseInt(d.completados||0);
-    byCiu[c].canc+=parseInt(d.cancelados||0);
+    if(!byCiu[c])byCiu[c]={city:c,total:0,comp:0,canc:0};
+    byCiu[c].total+=parseInt(d.total||0);byCiu[c].comp+=parseInt(d.completados||0);byCiu[c].canc+=parseInt(d.cancelados||0);
   });
   const ciuArr=Object.values(byCiu).sort((a,b)=>b.total-a.total).slice(0,15);
   destroyChart('cumplCiudad');
   charts['cumplCiudad']=new Chart(document.getElementById('cumplCiudad'),{type:'bar',
-    data:{
-      labels:ciuArr.map(d=>d.city),
-      datasets:[
-        {label:'Ef. Total',   data:ciuArr.map(d=>d.total>0?parseFloat((d.comp/d.total*100).toFixed(1)):0), backgroundColor:'rgba(27,79,216,0.7)',borderRadius:3},
-        {label:'Ef. Operativa',data:ciuArr.map(d=>(d.total-d.canc)>0?parseFloat((d.comp/(d.total-d.canc)*100).toFixed(1)):0),backgroundColor:'rgba(22,163,74,0.7)',borderRadius:3}
-      ]
-    },
+    data:{labels:ciuArr.map(d=>d.city),datasets:[
+      {label:'Ef. Total',    data:ciuArr.map(d=>d.total>0?parseFloat((d.comp/d.total*100).toFixed(1)):0),backgroundColor:'rgba(245,196,0,0.65)',borderRadius:3},
+      {label:'Ef. Operativa',data:ciuArr.map(d=>(d.total-d.canc)>0?parseFloat((d.comp/(d.total-d.canc)*100).toFixed(1)):0),backgroundColor:'rgba(34,197,94,0.65)',borderRadius:3}
+    ]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:10}}},
-      scales:{x:{ticks:{font:{size:10}}},y:{min:0,max:100,ticks:{font:{size:9},callback:v=>v+'%'}}}}
+      plugins:{legend:{position:'bottom',labels:{color:'#555',font:{size:10},boxWidth:10,padding:10}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#A0A0A0',font:{size:10}}},
+              y:{min:0,max:100,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#555',font:{size:9},callback:v=>v+'%'}}}}
   });
 }
 
-// ─── CLIENTES ────────────────────────────────────────────
+// ── CLIENTES ──
 let cliAll=[];
 function renderClientes(){
-  const mes=document.getElementById('cli-mes').value;
-  let data=rawClientes;
-  if(mes) data=data.filter(d=>{
-    // rawClientes viene de API, no tiene fecha — usamos rawCiudades como proxy
-    return true; // API no filtra por mes aún
-  });
-  cliAll=data;
-  document.getElementById('cliCount').textContent=data.length+' registros';
-  document.getElementById('cli-info').textContent=fmt(data.reduce((s,d)=>s+parseInt(d.total_servicios||0),0))+' servicios';
+  cliAll=rawClientes;
+  document.getElementById('cliCount').textContent=rawClientes.length+' registros';
+  document.getElementById('cli-info').textContent=fmt(rawClientes.reduce((s,d)=>s+parseInt(d.total_servicios||0),0))+' servicios';
   filterCliTable();
 }
 function filterCliTable(){
@@ -1160,16 +1183,89 @@ function filterCliTable(){
     </tr>`).join('')}</tbody></table>`;
 }
 
-// ─── SEMANAS DINÁMICAS ───────────────────────────────────
+// ── PENDIENTES ──
+function renderPendientes(){
+  const resumen=rawPendientesResumen;
+  const total=resumen.reduce((s,d)=>s+parseInt(d.guias||0),0);
+  const criticos=resumen.filter(d=>d.nivel_alerta==='CRITICO').reduce((s,d)=>s+parseInt(d.guias||0),0);
+  const altos=resumen.filter(d=>d.nivel_alerta==='ALTO').reduce((s,d)=>s+parseInt(d.guias||0),0);
+  const medios=resumen.filter(d=>d.nivel_alerta==='MEDIO').reduce((s,d)=>s+parseInt(d.guias||0),0);
+  const estados=[...new Set(resumen.map(d=>d.status))].length;
+  const recientes=resumen.filter(d=>d.nivel_alerta==='RECIENTE').reduce((s,d)=>s+parseInt(d.guias||0),0);
+  const badge=document.getElementById('pendientesBadge');
+  if(criticos>0){badge.style.display='';badge.textContent=criticos;}
+  document.getElementById('pendKpis').innerHTML=`
+    ${kpiCard('TOTAL PENDIENTES',fmt(total),'Sin finalizar','down','var(--red)')}
+    ${kpiCard('CRÍTICOS +30d',fmt(criticos),'Acción inmediata',criticos>0?'down':'neutral','var(--red)')}
+    ${kpiCard('ALTO 15-29d',fmt(altos),'Seguimiento urgente',altos>0?'down':'neutral','var(--amber)')}
+    ${kpiCard('MEDIO 7-14d',fmt(medios),'Monitorear','neutral','var(--gold)')}
+    ${kpiCard('ESTADOS ACTIVOS',fmt(estados),'Tipos activos','neutral','var(--blue)')}
+    ${kpiCard('RECIENTES',fmt(recientes),'Hoy / Ayer','neutral','var(--text-3)')}
+  `;
+  const estados_list=[...new Set(resumen.map(d=>d.status))];
+  const niveles=['CRITICO','ALTO','MEDIO','BAJO','RECIENTE'];
+  const nClrs={'CRITICO':'rgba(239,68,68,0.8)','ALTO':'rgba(245,158,11,0.8)','MEDIO':'rgba(245,196,0,0.8)','BAJO':'rgba(59,130,246,0.6)','RECIENTE':'rgba(160,160,160,0.5)'};
+  const datasets=niveles.map(n=>({label:n,backgroundColor:nClrs[n],borderRadius:3,
+    data:estados_list.map(e=>{const r=resumen.find(d=>d.status===e&&d.nivel_alerta===n);return r?parseInt(r.guias):0;})
+  })).filter(d=>d.data.some(v=>v>0));
+  destroyChart('pendChart');
+  charts['pendChart']=new Chart(document.getElementById('pendChart'),{type:'bar',data:{labels:estados_list,datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{color:'#555',font:{size:10},boxWidth:10,padding:8}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#A0A0A0',font:{size:10}}},y:{stacked:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#555',font:{size:10}}}}}
+  });
+  const dNiveles=['CRITICO','ALTO','MEDIO','BAJO','RECIENTE'];
+  const dVals=dNiveles.map(n=>resumen.filter(d=>d.nivel_alerta===n).reduce((s,d)=>s+parseInt(d.guias||0),0));
+  const dClrs=['#EF4444','#F59E0B','#F5C400','#3B82F6','#9ca3af'];
+  destroyChart('pendDonut');
+  charts['pendDonut']=new Chart(document.getElementById('pendDonut'),{type:'doughnut',
+    data:{labels:dNiveles,datasets:[{data:dVals,backgroundColor:dClrs,borderWidth:0,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}
+  });
+  document.getElementById('pendDonutLegend').innerHTML=dNiveles.map((l,i)=>
+    `<div class="dl-item"><div class="dl-dot" style="background:${dClrs[i]}"></div><span class="dl-label">${l}</span><span class="dl-val">${fmt(dVals[i])}</span></div>`
+  ).join('');
+  filterPendientes();
+}
+function filterPendientes(){
+  const nivel=(document.getElementById('pend-nivel')?.value)||'';
+  const status=(document.getElementById('pend-status')?.value)||'';
+  const q=(document.getElementById('pendSearch')?.value||'').toLowerCase();
+  let data=rawPendientesDetalle;
+  if(nivel)data=data.filter(d=>d.nivel_alerta===nivel);
+  if(status)data=data.filter(d=>d.status===status);
+  if(q)data=data.filter(d=>(d.service_id||'').toLowerCase().includes(q)||(d.city||'').toLowerCase().includes(q)||(d.client||'').toLowerCase().includes(q));
+  document.getElementById('pend-info').textContent=`${fmt(data.length)} guías`;
+  document.getElementById('pendCount').textContent=fmt(data.length)+' guías';
+  const nb=v=>{
+    const cls={'CRITICO':'red','ALTO':'amber','MEDIO':'','BAJO':'blue','RECIENTE':''}[v]||'';
+    const ic={'CRITICO':'🔴','ALTO':'🟠','MEDIO':'🟡','BAJO':'🟢','RECIENTE':'⚪'}[v]||'';
+    return `<span class="badge badge-${cls}">${ic} ${v}</span>`;
+  };
+  document.getElementById('pendTbl').innerHTML=data.length?`<table>
+    <thead><tr><th>Guía</th><th>Cliente</th><th>Ciudad</th><th>Estado</th><th>Fecha</th><th>Días</th><th>Alerta</th></tr></thead>
+    <tbody>${data.map(d=>`<tr>
+      <td class="td-mono" style="font-size:10px">${d.service_id}</td>
+      <td class="td-name" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.client||'—'}</td>
+      <td class="td-muted">${d.city||'—'}</td>
+      <td><span class="badge badge-${d.status==='Fallido'?'red':d.status==='No asignado'?'amber':'blue'}">${d.status}</span></td>
+      <td class="td-mono td-muted">${(d.fecha_creacion||'').substr(0,10)}</td>
+      <td class="td-mono" style="font-weight:600;color:${parseInt(d.dias_pendiente)>=30?'var(--red)':parseInt(d.dias_pendiente)>=15?'var(--amber)':'var(--text-2)'}">${d.dias_pendiente}d</td>
+      <td>${nb(d.nivel_alerta)}</td>
+    </tr>`).join('')}</tbody></table>`
+    :'<div class="empty-msg">Sin guías con los filtros seleccionados</div>';
+}
+
+// ── SEMANAS ──
 function buildSemanas(data){
   const semanas=[...new Set(data.filter(d=>d.fecha).map(d=>getSemana(d.fecha)))].sort();
   const sel=document.getElementById('hist-semana');
   sel.innerHTML='<option value="">Todas las semanas</option>'+semanas.map(s=>`<option value="${s}">${s}</option>`).join('');
 }
 
-// ─── LOAD ALL ────────────────────────────────────────────
+// ── LOAD ALL ──
 async function loadAll(manual){
-  try {
+  try{
     const [kpis,ciudades,clientes,pendResumen,pendDetalle,ciudadesHoy]=await Promise.all([
       fetchAPI('api/kpis-diarios'),
       fetchAPI('api/cumplimiento-ciudad'),
@@ -1178,41 +1274,27 @@ async function loadAll(manual){
       fetchAPI('api/pendientes-detalle'),
       fetchAPI('api/cumplimiento-hoy')
     ]);
-    rawKpis=kpis; rawCiudades=ciudades; rawClientes=clientes;
-    rawPendientesResumen=pendResumen; rawPendientesDetalle=pendDetalle;
-    rawCiudadesHoy=ciudadesHoy;
-
-    // Ciudades únicas para multi-selects
-    allCiudades=[...new Set(ciudades.map(d=>d.city).filter(Boolean))].sort();
+    rawKpis=kpis;rawCiudades=ciudades;rawClientes=clientes;
+    rawPendientesResumen=pendResumen;rawPendientesDetalle=pendDetalle;rawCiudadesHoy=ciudadesHoy;
+    const allCiudades=[...new Set(ciudades.map(d=>d.city).filter(Boolean))].sort();
     const ciudadesHoyList=[...new Set(ciudadesHoy.map(d=>d.city).filter(Boolean))].sort();
-    initMS('ms-pv', ciudadesHoyList, ()=>renderPV());
+    initMS('ms-pv',ciudadesHoyList,()=>renderPV());
     ['ms-hist','ms-ciu','ms-cum'].forEach(id=>{
-      initMS(id, allCiudades, ()=>{
-        if(id==='ms-pv') renderPV();
-        else if(id==='ms-hist') renderHistorico();
-        else if(id==='ms-ciu') renderCiudades();
-        else if(id==='ms-cum') renderCumplimiento();
+      initMS(id,allCiudades,()=>{
+        if(id==='ms-hist')renderHistorico();
+        else if(id==='ms-ciu')renderCiudades();
+        else if(id==='ms-cum')renderCumplimiento();
       });
     });
-
     buildSemanas(kpis);
-
-    const totalReg=rawKpis.reduce((s,d)=>s+parseInt(d.total_servicios||0),0);
-    document.getElementById('sidebarTotal').textContent=fmt(totalReg)+' servicios';
+    document.getElementById('sidebarTotal').textContent=fmt(rawKpis.reduce((s,d)=>s+parseInt(d.total_servicios||0),0));
     document.getElementById('sidebarSync').textContent=new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
-
-    renderPV();
-    renderHistorico();
-    renderCiudades();
-    renderCumplimiento();
-    renderClientes();
-    renderPendientes();
-  } catch(e){ console.error(e); }
+    renderPV();renderHistorico();renderCiudades();renderCumplimiento();renderClientes();renderPendientes();
+  }catch(e){console.error(e);}
 }
 
-// Close dropdowns on outside click
-document.addEventListener('click', e=>{
-  if(!e.target.closest('.ms-wrap')) document.querySelectorAll('.ms-dropdown.open').forEach(d=>d.classList.remove('open'));
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ms-wrap'))document.querySelectorAll('.ms-dropdown.open').forEach(d=>d.classList.remove('open'));
 });
 
 loadAll();
