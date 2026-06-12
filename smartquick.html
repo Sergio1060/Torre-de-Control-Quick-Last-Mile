@@ -786,7 +786,6 @@ if('serviceWorker' in navigator){
     <select class="sel" id="pend-status" onchange="filterPendientes()">
       <option value="">Todos los estados</option>
       <option value="No asignado">No asignado</option>
-      <option value="Fallido">Fallido</option>
       <option value="Asignado">Asignado</option>
       <option value="En Bodega">En Bodega</option>
       <option value="Llegada">Llegada</option>
@@ -1413,7 +1412,9 @@ async function loadAll(manual){
       fetchAPI('api/cumplimiento-hoy')
     ]);
     rawKpis=kpis;rawCiudades=ciudades;rawClientes=clientes;
-    rawPendientesResumen=pendResumen;rawPendientesDetalle=pendDetalle;rawCiudadesHoy=ciudadesHoy;
+    rawPendientesResumen=pendResumen.filter(d=>d.status!=='Fallido');
+    rawPendientesDetalle=pendDetalle.filter(d=>d.status!=='Fallido');
+    rawCiudadesHoy=ciudadesHoy;
     const allCiudades=[...new Set(ciudades.map(d=>d.city).filter(Boolean))].sort();
     const ciudadesHoyList=[...new Set(ciudadesHoy.map(d=>d.city).filter(Boolean))].sort();
     initMS('ms-pv',ciudadesHoyList,()=>renderPV());
