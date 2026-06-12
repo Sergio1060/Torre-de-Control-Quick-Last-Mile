@@ -1,33 +1,23 @@
-const CACHE = 'quicktc-v3';
-const ASSETS = [
-  '/Torre-de-Control-Quick-Last-Mile/smartquick.html'
-];
+const CACHE = 'quicktc-v4';
 
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', e => {
-  // API calls: network only (always fresh data)
-  if (e.request.url.includes('n8n.srv1729021')) {
-    return e.respondWith(fetch(e.request));
+  const url = new URL(e.request.url);
+  // Only handle same-origin GET requests; let everything else (N8N API, etc) pass through untouched
+  if (url.origin !== self.location.origin || e.request.method !== 'GET') {
+    return;
   }
-  // App shell: cache first, fallback network
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).then(resp => {
-      const clone = resp.clone();
-      caches.open(CACHE).then(c => c.put(e.request, clone));
-      return resp;
-    }))
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
