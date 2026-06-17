@@ -791,6 +791,13 @@ if('serviceWorker' in navigator){
       <option value="Llegada">Llegada</option>
       <option value="Aceptado">Aceptado</option>
     </select>
+    <select class="sel" id="pend-cia" onchange="filterPendientes()">
+      <option value="">Todas las compañías</option>
+      <option value="Quick Crossdocking">Quick Crossdocking</option>
+      <option value="Proyecto SAI">Proyecto SAI</option>
+      <option value="Courrier">Courrier</option>
+      <option value="Shappy">Shappy</option>
+    </select>
     <span class="fbar-info" id="pend-info">—</span>
   </div>
   <div class="kpi-strip" id="pendKpis"><div class="loading-wrap"><div class="spinner"></div></div></div>
@@ -1378,7 +1385,9 @@ function filterPendientes(){
   let data=rawPendientesDetalle;
   if(nivel)data=data.filter(d=>d.nivel_alerta===nivel);
   if(status)data=data.filter(d=>d.status===status);
-  if(q)data=data.filter(d=>(d.service_id||'').toLowerCase().includes(q)||(d.city||'').toLowerCase().includes(q)||(d.client||'').toLowerCase().includes(q));
+  const cia=(document.getElementById('pend-cia')?.value)||'';
+  if(cia)data=data.filter(d=>d.source_key===cia);
+  if(q)data=data.filter(d=>(d.service_id||'').toLowerCase().includes(q)||(d.city||'').toLowerCase().includes(q)||(d.client||'').toLowerCase().includes(q)||(d.source_key||'').toLowerCase().includes(q));
   document.getElementById('pend-info').textContent=`${fmt(data.length)} guías`;
   document.getElementById('pendCount').textContent=fmt(data.length)+' guías';
   const nb=v=>{
@@ -1387,11 +1396,12 @@ function filterPendientes(){
     return `<span class="badge badge-${cls}">${ic} ${v}</span>`;
   };
   document.getElementById('pendTbl').innerHTML=data.length?`<table>
-    <thead><tr><th>Guía</th><th>Cliente</th><th>Ciudad</th><th>Estado</th><th>Fecha</th><th>Días</th><th>Alerta</th></tr></thead>
+    <thead><tr><th>Guía</th><th>Cliente</th><th>Ciudad</th><th>Compañía</th><th>Estado</th><th>Fecha</th><th>Días</th><th>Alerta</th></tr></thead>
     <tbody>${data.map(d=>`<tr>
       <td class="td-mono" style="font-size:10px">${d.service_id}</td>
       <td class="td-name" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.client||'—'}</td>
       <td class="td-muted">${fixCity(d.city||'—')}</td>
+      <td class="td-muted" style="font-size:11px">${d.source_key||'—'}</td>
       <td><span class="badge badge-${d.status==='Fallido'?'red':d.status==='No asignado'?'amber':'blue'}">${d.status}</span></td>
       <td class="td-mono td-muted">${(d.fecha_creacion||'').substr(0,10)}</td>
       <td class="td-mono" style="font-weight:600;color:${parseInt(d.dias_pendiente)>=30?'var(--red)':parseInt(d.dias_pendiente)>=15?'var(--amber)':'var(--text-2)'}">${d.dias_pendiente}d</td>
@@ -1399,6 +1409,7 @@ function filterPendientes(){
     </tr>`).join('')}</tbody></table>`
     :'<div class="empty-msg">Sin guías con los filtros seleccionados</div>';
 }
+
 
 // ── SEMANAS ──
 function buildSemanas(data){
