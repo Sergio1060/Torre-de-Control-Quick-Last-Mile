@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Costo Transporte — Quick Help</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#F5C800;--gold-dim:#c9a500;
+  --black:#0D0D0D;--dark:#181818;--card:#1e1e1e;--border:#2a2a2a;
+  --text:#f0f0f0;--muted:#888;--subtle:#444;
+  --green:#22c55e;--red:#ef4444;--blue:#3b82f6;
+}
+body{background:var(--black);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;font-size:14px;min-height:100vh}
+header{background:var(--dark);border-bottom:2px solid var(--gold);padding:16px 28px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.logo-badge{background:var(--gold);color:var(--black);font-weight:700;font-size:11px;letter-spacing:.08em;padding:5px 10px;border-radius:4px;text-transform:uppercase}
+header h1{font-size:17px;font-weight:600;color:var(--text)}
+#status-pill{margin-left:auto;font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);color:var(--muted)}
+#status-pill.ok{border-color:var(--green);color:var(--green)}
+#status-pill.err{border-color:var(--red);color:var(--red)}
+#status-pill.loading{border-color:var(--gold);color:var(--gold)}
+.filters{background:var(--dark);border-bottom:1px solid var(--border);padding:12px 28px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.filter-group{display:flex;flex-direction:column;gap:3px}
+.filter-group label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+select{background:#252525;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;min-width:140px}
+select:focus{outline:none;border-color:var(--gold)}
+.filter-sep{width:1px;height:36px;background:var(--border);margin:0 6px}
+.btn-clear{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer}
+.btn-clear:hover{color:var(--text);border-color:var(--subtle)}
+.btn-reload{background:var(--gold);color:var(--black);border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-left:auto}
+.btn-reload:hover{background:var(--gold-dim)}
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:20px 28px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold)}
+.kpi .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:6px}
+.kpi .val{font-size:22px;font-weight:700;color:var(--text);line-height:1;margin-bottom:4px}
+.kpi .sub{font-size:11px;color:var(--muted)}
+.kpi.green::before{background:var(--green)}
+.kpi.red::before{background:var(--red)}
+.kpi.blue::before{background:var(--blue)}
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 28px 20px}
+.full{grid-column:1/-1}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px}
+.chart-card h3{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.chart-wrap{position:relative;height:260px}
+.chart-wrap.tall{height:300px}
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab{background:transparent;border:none;color:var(--muted);padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.04em;text-transform:uppercase}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.table-wrap{overflow-x:auto;max-height:320px;overflow-y:auto}
+.table-wrap::-webkit-scrollbar{width:5px;height:5px}
+.table-wrap::-webkit-scrollbar-thumb{background:var(--subtle);border-radius:3px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#252525;color:var(--muted);text-transform:uppercase;font-size:10px;letter-spacing:.06em;padding:8px 12px;text-align:left;position:sticky;top:0;z-index:1}
+td{padding:8px 12px;border-bottom:1px solid #1a1a1a;color:var(--text)}
+tr:hover td{background:#222}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700}
+.badge.fin{background:#166534;color:#bbf7d0}
+.badge.can{background:#7f1d1d;color:#fecaca}
+.badge.enc{background:#3b3b00;color:var(--gold)}
+.badge.tra{background:#1e3a5f;color:#93c5fd}
+.city-tag{background:#252525;color:var(--gold);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.dia-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dia-box{background:#252525;border-radius:8px;padding:10px 8px;text-align:center;border:1px solid var(--border)}
+.dia-box .dia-num{font-size:18px;font-weight:700;color:var(--text)}
+.dia-box .dia-label{font-size:10px;color:var(--muted);margin-top:2px}
+.dia-box .dia-val{font-size:11px;color:var(--gold);font-weight:600;margin-top:4px}
+.dia-box.best{border-color:var(--gold);background:#1a1800}
+footer{border-top:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted)}
+footer strong{color:var(--gold)}
+.empty-state{text-align:center;padding:40px;color:var(--muted)}
+@media(max-width:900px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.main-grid{grid-template-columns:1fr}.full{grid-column:1}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-badge">Quick</div>
+  <h1>Costo Transporte — Crossdocking</h1>
+  <span id="status-pill" class="loading">Cargando...</span>
+  <button class="btn-reload" onclick="loadData()">&#8635; Actualizar</button>
+</header>
+
+<div class="filters">
+  <div class="filter-group">
+    <label>Mes</label>
+    <select id="f-mes"><option value="">Todos los meses</option></select>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <label>Semana</label>
+    <select id="f-semana"><option value="">Todas las semanas</option></select>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <label>Ciudad</label>
+    <select id="f-ciudad"><option value="">Todas las ciudades</option></select>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <label>Tipo de servicio</label>
+    <select id="f-tipo"><option value="">Todos los tipos</option></select>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <label>Servicio</label>
+    <select id="f-servicio"><option value="">Todos los servicios</option></select>
+  </div>
+  <button class="btn-clear" onclick="clearFilters()">&#10005; Limpiar</button>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi"><div class="label">Precio Total</div><div class="val" id="k-total">—</div><div class="sub" id="k-total-n">0 servicios</div></div>
+  <div class="kpi green"><div class="label">Ganancia (Quicker)</div><div class="val" id="k-gan">—</div><div class="sub" id="k-gan-pct">0% del precio</div></div>
+  <div class="kpi blue"><div class="label">Ticket promedio</div><div class="val" id="k-avg">—</div><div class="sub">por servicio</div></div>
+  <div class="kpi red"><div class="label">Cancelados</div><div class="val" id="k-can">—</div><div class="sub" id="k-can-pct">0% del total</div></div>
+  <div class="kpi"><div class="label">Ciudades activas</div><div class="val" id="k-cit">—</div><div class="sub" id="k-weeks">0 semanas</div></div>
+</div>
+
+<div class="main-grid">
+  <div class="chart-card full">
+    <h3>Tendencia semanal — Precio total vs Ganancia</h3>
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab('precio')">Por Precio</button>
+      <button class="tab" onclick="switchTab('ganancia')">Por Ganancia</button>
+      <button class="tab" onclick="switchTab('margen')">Margen %</button>
+    </div>
+    <div class="chart-wrap"><canvas id="chart-semana"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Precio total por ciudad</h3>
+    <div class="chart-wrap tall"><canvas id="chart-ciudad"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Distribución por tipo de servicio</h3>
+    <div class="chart-wrap tall"><canvas id="chart-tipo"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Ganancia por servicio</h3>
+    <div class="chart-wrap"><canvas id="chart-servicio"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Comparativo por día del mes</h3>
+    <div id="dia-container"><p class="empty-state">Sin datos</p></div>
+  </div>
+  <div class="chart-card full">
+    <h3>Detalle de servicios</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Fecha</th><th>Ciudad</th><th>Tipo Servicio</th><th>Servicio</th><th>Precio Total</th><th>Ganancia</th><th>Margen</th><th>Estado</th></tr></thead>
+        <tbody id="tabla-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Quick Last Mile · Crossdocking · <strong>Datos: Google Sheets en tiempo real</strong></span>
+  <span id="footer-info">—</span>
+</footer>
+
+<script>
+// ─── CONFIGURACIÓN ───────────────────────────────────────────────
+const SHEET_ID   = '1vtTpOQHAj0x4PZGkfNmN1WrXcKi8uSA39d5dIitZ4BA';
+const SHEET_NAME = 'costos_quick';
+const SHEET_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+// ─── ESTADO ──────────────────────────────────────────────────────
+let DATA = [];
+let charts = {};
+let semanaMode = 'precio';
+
+// ─── UTILIDADES ──────────────────────────────────────────────────
+const COP = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);
+const NUM = v => new Intl.NumberFormat('es-CO').format(v);
+const PCT = v => (v*100).toFixed(1)+'%';
+const GOLD='#F5C800',GREEN='#22c55e',RED='#ef4444',BLUE='#3b82f6',MUTED='#888';
+const PALETTE=['#F5C800','#3b82f6','#22c55e','#ef4444','#a855f7','#f97316','#06b6d4','#ec4899','#84cc16','#14b8a6','#f59e0b','#8b5cf6'];
+
+Chart.defaults.color = MUTED;
+Chart.defaults.borderColor = '#2a2a2a';
+Chart.defaults.font.family = 'Segoe UI,system-ui,sans-serif';
+Chart.defaults.font.size = 12;
+
+// ─── CARGA DESDE GOOGLE SHEETS ───────────────────────────────────
+async function loadData() {
+  const pill = document.getElementById('status-pill');
+  pill.className = 'loading';
+  pill.textContent = 'Cargando...';
+
+  try {
+    const res = await fetch(SHEET_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    DATA = parseCSV(text);
+
+    if (DATA.length === 0) {
+      pill.className = 'err';
+      pill.textContent = 'Sin datos en el Sheet';
+      document.getElementById('footer-info').textContent = 'El Sheet está vacío — N8N aún no ha cargado datos';
+      return;
+    }
+
+    pill.className = 'ok';
+    pill.textContent = `✓ ${NUM(DATA.length)} registros`;
+    document.getElementById('footer-info').textContent =
+      `Última carga: ${new Date().toLocaleString('es-CO')} · ${NUM(DATA.length)} filas`;
+
+    resetFiltros();
+    initFiltros();
+    render();
+  } catch(e) {
+    pill.className = 'err';
+    pill.textContent = 'Error cargando datos';
+    document.getElementById('footer-info').textContent =
+      'Verifica que el Sheet esté publicado: Archivo → Compartir → Publicar en la web → CSV';
+    console.error(e);
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.split('\n').filter(l => l.trim());
+  if (lines.length < 2) return [];
+  const sep = lines[0].includes(';') ? ';' : ',';
+  const headers = lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g,'').toLowerCase());
+
+  const idx = {
+    id:      headers.findIndex(h => h.includes('id servicio') || h === 'id_servicio'),
+    fecha:   headers.findIndex(h => h.includes('fecha')),
+    ciudad:  headers.findIndex(h => h.includes('ciudad')),
+    servicio:headers.findIndex(h => h === 'servicio'),
+    tipo:    headers.findIndex(h => h.includes('tipo')),
+    precio:  headers.findIndex(h => h.includes('precio')),
+    ganancia:headers.findIndex(h => h.includes('ganancia') || h.includes('ganancias')),
+    estado:  headers.findIndex(h => h.includes('estado')),
+  };
+
+  return lines.slice(1).map((line, i) => {
+    const cols = line.split(sep).map(c => c.trim().replace(/^"|"$/g,''));
+    const fechaStr = idx.fecha >= 0 ? cols[idx.fecha] : '';
+    const partes = fechaStr.split('/');
+    const dia  = partes.length >= 1 ? parseInt(partes[0]) || 0 : 0;
+    const mes  = partes.length >= 2 ? parseInt(partes[1]) || 0 : 0;
+    const semana = mes > 0 ? `${partes[2]?.substring(0,4)||'2026'}-S${Math.ceil(dia/7) + (mes-1)*4}` : '';
+    const precio   = parseFloat(cols[idx.precio]   || '0') || 0;
+    const ganancia = parseFloat(cols[idx.ganancia]  || '0') || 0;
+    if (!precio) return null;
+    return {
+      id:       idx.id >= 0 ? cols[idx.id] : String(i+1),
+      fecha:    fechaStr,
+      mes, dia, semana,
+      ciudad:   (idx.ciudad >= 0  ? cols[idx.ciudad]   : '').toUpperCase(),
+      servicio:  idx.servicio >= 0 ? cols[idx.servicio]  : '',
+      tipo_servicio: idx.tipo >= 0 ? cols[idx.tipo]     : '',
+      precio_total: precio,
+      ganancias: ganancia,
+      estado:    idx.estado >= 0  ? cols[idx.estado]    : 'Finalizado',
+    };
+  }).filter(Boolean);
+}
+
+// ─── FILTROS ─────────────────────────────────────────────────────
+const MESES = {1:'Enero',2:'Febrero',3:'Marzo',4:'Abril',5:'Mayo',6:'Junio',
+               7:'Julio',8:'Agosto',9:'Septiembre',10:'Octubre',11:'Noviembre',12:'Diciembre'};
+
+function resetFiltros() {
+  ['f-mes','f-semana','f-ciudad','f-tipo','f-servicio'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = sel.options[0].outerHTML;
+  });
+}
+
+function initFiltros() {
+  const add = (id, vals) => {
+    const sel = document.getElementById(id);
+    [...new Set(vals)].sort().forEach(v => {
+      if (!v) return;
+      const o = document.createElement('option');
+      o.value = v; o.text = v;
+      sel.appendChild(o);
+    });
+  };
+  add('f-mes',     DATA.map(r => r.mes ? (MESES[r.mes] || r.mes) : '').filter(Boolean));
+  add('f-semana',  DATA.map(r => r.semana).filter(Boolean));
+  add('f-ciudad',  DATA.map(r => r.ciudad).filter(Boolean));
+  add('f-tipo',    DATA.map(r => r.tipo_servicio).filter(Boolean));
+  add('f-servicio',DATA.map(r => r.servicio).filter(Boolean));
+  ['f-mes','f-semana','f-ciudad','f-tipo','f-servicio'].forEach(id =>
+    document.getElementById(id).addEventListener('change', render));
+}
+
+function getFiltered() {
+  const m  = document.getElementById('f-mes').value;
+  const s  = document.getElementById('f-semana').value;
+  const c  = document.getElementById('f-ciudad').value;
+  const t  = document.getElementById('f-tipo').value;
+  const sv = document.getElementById('f-servicio').value;
+  return DATA.filter(r =>
+    (!m  || (MESES[r.mes] || String(r.mes)) === m) &&
+    (!s  || r.semana === s) &&
+    (!c  || r.ciudad === c) &&
+    (!t  || r.tipo_servicio === t) &&
+    (!sv || r.servicio === sv)
+  );
+}
+
+function clearFilters() {
+  ['f-mes','f-semana','f-ciudad','f-tipo','f-servicio'].forEach(id =>
+    document.getElementById(id).value = '');
+  render();
+}
+
+// ─── RENDER PRINCIPAL ────────────────────────────────────────────
+function render() {
+  const fd = getFiltered();
+  updateKPIs(fd);
+  updateSemanaChart(fd);
+  updateCiudadChart(fd);
+  updateTipoChart(fd);
+  updateServicioChart(fd);
+  updateDiaGrid(fd);
+  updateTabla(fd);
+}
+
+function updateKPIs(fd) {
+  const total = fd.reduce((s,r) => s+r.precio_total, 0);
+  const gan   = fd.reduce((s,r) => s+r.ganancias, 0);
+  const can   = fd.filter(r => r.estado === 'Cancelado').length;
+  const cits  = new Set(fd.map(r => r.ciudad)).size;
+  const sems  = new Set(fd.map(r => r.semana)).size;
+  document.getElementById('k-total').textContent   = COP(total);
+  document.getElementById('k-total-n').textContent = NUM(fd.length)+' servicios';
+  document.getElementById('k-gan').textContent     = COP(gan);
+  document.getElementById('k-gan-pct').textContent = fd.length ? PCT(gan/total)+' del precio' : '—';
+  document.getElementById('k-avg').textContent     = fd.length ? COP(total/fd.length) : '—';
+  document.getElementById('k-can').textContent     = NUM(can);
+  document.getElementById('k-can-pct').textContent = fd.length ? PCT(can/fd.length)+' del total' : '—';
+  document.getElementById('k-cit').textContent     = NUM(cits);
+  document.getElementById('k-weeks').textContent   = NUM(sems)+' semana'+(sems!==1?'s':'');
+}
+
+function group(arr, key, val) {
+  const g={};
+  arr.forEach(r => { const k=r[key]; g[k]=(g[k]||0)+r[val]; });
+  return g;
+}
+
+function switchTab(mode) {
+  semanaMode = mode;
+  document.querySelectorAll('.tab-bar .tab').forEach((t,i) =>
+    t.classList.toggle('active', ['precio','ganancia','margen'][i] === mode));
+  updateSemanaChart(getFiltered());
+}
+
+function updateSemanaChart(fd) {
+  const ss = [...new Set(fd.map(r => r.semana))].filter(Boolean).sort();
+  const gP={}, gG={};
+  fd.forEach(r => { gP[r.semana]=(gP[r.semana]||0)+r.precio_total; gG[r.semana]=(gG[r.semana]||0)+r.ganancias; });
+  let datasets;
+  if (semanaMode==='precio') {
+    datasets=[
+      {label:'Precio total', data:ss.map(s=>gP[s]||0), borderColor:GOLD, backgroundColor:'rgba(245,200,0,.12)', tension:.4, fill:true, borderWidth:2, pointBackgroundColor:GOLD},
+      {label:'Ganancia',     data:ss.map(s=>gG[s]||0), borderColor:GREEN,backgroundColor:'rgba(34,197,94,.08)',  tension:.4, fill:true, borderWidth:2, pointBackgroundColor:GREEN}
+    ];
+  } else if (semanaMode==='ganancia') {
+    datasets=[{label:'Ganancia', data:ss.map(s=>gG[s]||0), borderColor:GREEN, backgroundColor:'rgba(34,197,94,.15)', tension:.4, fill:true, borderWidth:2, pointBackgroundColor:GREEN}];
+  } else {
+    datasets=[{label:'Margen %', data:ss.map(s=>gP[s]?(gG[s]||0)/gP[s]*100:0), borderColor:BLUE, backgroundColor:'rgba(59,130,246,.12)', tension:.4, fill:true, borderWidth:2, pointBackgroundColor:BLUE}];
+  }
+  const cfg = {
+    type:'line', data:{labels:ss, datasets},
+    options:{responsive:true, maintainAspectRatio:false,
+      scales:{y:{ticks:{callback:v=>semanaMode==='margen'?v.toFixed(1)+'%':COP(v)}, grid:{color:'#1e1e1e'}}, x:{grid:{color:'#1e1e1e'}}},
+      plugins:{legend:{labels:{color:MUTED}}, tooltip:{callbacks:{label:ctx=>' '+(semanaMode==='margen'?ctx.parsed.y.toFixed(1)+'%':COP(ctx.parsed.y))}}}}
+  };
+  if (charts.semana) { charts.semana.data=cfg.data; charts.semana.options=cfg.options; charts.semana.update(); }
+  else charts.semana = new Chart(document.getElementById('chart-semana').getContext('2d'), cfg);
+}
+
+function updateCiudadChart(fd) {
+  const g = group(fd,'ciudad','precio_total');
+  const sorted = Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  const cfg = {
+    type:'bar', data:{labels:sorted.map(e=>e[0]), datasets:[{label:'Precio total', data:sorted.map(e=>e[1]), backgroundColor:PALETTE.slice(0,sorted.length), borderRadius:5, borderSkipped:false}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      scales:{x:{ticks:{callback:v=>COP(v)}, grid:{color:'#1e1e1e'}}, y:{grid:{color:'#1e1e1e'}}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>' '+COP(ctx.parsed.x)}}}}
+  };
+  if (charts.ciudad) { charts.ciudad.data=cfg.data; charts.ciudad.update(); }
+  else charts.ciudad = new Chart(document.getElementById('chart-ciudad').getContext('2d'), cfg);
+}
+
+function updateTipoChart(fd) {
+  const g = group(fd,'tipo_servicio','precio_total');
+  const entries = Object.entries(g).sort((a,b)=>b[1]-a[1]);
+  const cfg = {
+    type:'doughnut', data:{labels:entries.map(e=>e[0]), datasets:[{data:entries.map(e=>e[1]), backgroundColor:PALETTE.slice(0,entries.length), borderColor:'#1e1e1e', borderWidth:2, hoverOffset:8}]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{boxWidth:10,padding:12,color:MUTED,font:{size:11}}},
+      tooltip:{callbacks:{label:ctx=>{const t=fd.reduce((s,r)=>s+r.precio_total,0); return ' '+ctx.label+': '+COP(ctx.parsed)+' ('+PCT(ctx.parsed/t)+')';}}}}
+  }};
+  if (charts.tipo) { charts.tipo.data=cfg.data; charts.tipo.update(); }
+  else charts.tipo = new Chart(document.getElementById('chart-tipo').getContext('2d'), cfg);
+}
+
+function updateServicioChart(fd) {
+  const g = group(fd,'servicio','ganancias');
+  const sorted = Object.entries(g).sort((a,b)=>b[1]-a[1]);
+  const cfg = {
+    type:'bar', data:{labels:sorted.map(e=>e[0]), datasets:[{label:'Ganancia', data:sorted.map(e=>e[1]), backgroundColor:GOLD, borderRadius:5, borderSkipped:false}]},
+    options:{responsive:true, maintainAspectRatio:false,
+      scales:{y:{ticks:{callback:v=>COP(v)}, grid:{color:'#1e1e1e'}}, x:{grid:{color:'#1e1e1e'}, ticks:{maxRotation:30,font:{size:10}}}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>' '+COP(ctx.parsed.y)}}}}
+  };
+  if (charts.servicio) { charts.servicio.data=cfg.data; charts.servicio.update(); }
+  else charts.servicio = new Chart(document.getElementById('chart-servicio').getContext('2d'), cfg);
+}
+
+function updateDiaGrid(fd) {
+  const g = group(fd,'dia','precio_total');
+  const entries = Object.entries(g).sort((a,b)=>Number(a[0])-Number(b[0]));
+  const container = document.getElementById('dia-container');
+  if (!entries.length) { container.innerHTML='<p class="empty-state">Sin datos para el filtro seleccionado</p>'; return; }
+  const max = Math.max(...entries.map(e=>e[1]));
+  container.innerHTML = '<div class="dia-grid">'+entries.map(([dia,val])=>`
+    <div class="dia-box${val===max?' best':''}">
+      <div class="dia-num">${dia}</div>
+      <div class="dia-label">día</div>
+      <div class="dia-val">${COP(val)}</div>
+    </div>`).join('')+'</div>';
+}
+
+function updateTabla(fd) {
+  const st = {Finalizado:'fin',Cancelado:'can','En Transito':'enc','En_Transito':'enc'};
+  document.getElementById('tabla-body').innerHTML = fd.slice(0,300).map(r => {
+    const pct = r.precio_total ? (r.ganancias/r.precio_total*100).toFixed(1)+'%' : '—';
+    const cls = st[r.estado] || 'tra';
+    return `<tr>
+      <td style="color:var(--muted)">${r.id}</td>
+      <td>${r.fecha.split(' ')[0]}</td>
+      <td><span class="city-tag">${r.ciudad}</span></td>
+      <td style="color:var(--muted)">${r.tipo_servicio}</td>
+      <td>${r.servicio}</td>
+      <td style="color:var(--gold);font-weight:600">${COP(r.precio_total)}</td>
+      <td style="color:var(--green)">${COP(r.ganancias)}</td>
+      <td style="color:var(--muted)">${pct}</td>
+      <td><span class="badge ${cls}">${r.estado}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── ARRANQUE ────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
